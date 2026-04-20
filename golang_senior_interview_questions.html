@@ -1,0 +1,549 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.container { padding: 1rem 0; max-width: 860px; }
+.header { margin-bottom: 1.5rem; }
+.header h2 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+.header p { font-size: 14px; color: var(--color-text-secondary); }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; }
+.tab { padding: 6px 14px; font-size: 13px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
+.tab:hover { background: var(--color-background-secondary); }
+.tab.active { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; font-weight: 500; }
+.progress { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1rem; }
+.qcard { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); margin-bottom: 12px; overflow: hidden; }
+.qcard-header { padding: 14px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.qcard-header:hover { background: var(--color-background-secondary); }
+.q-left { display: flex; gap: 10px; align-items: flex-start; }
+.q-num { font-size: 12px; font-weight: 500; color: var(--color-text-tertiary); min-width: 22px; padding-top: 2px; }
+.q-text { font-size: 15px; color: var(--color-text-primary); line-height: 1.5; font-weight: 500; }
+.q-arrow { font-size: 14px; color: var(--color-text-tertiary); transition: transform 0.2s; flex-shrink: 0; padding-top: 2px; }
+.q-arrow.open { transform: rotate(180deg); }
+.qcard-body { padding: 0 16px 16px 16px; border-top: 0.5px solid var(--color-border-tertiary); }
+.qcard-body pre { background: var(--color-background-tertiary); border-radius: var(--border-radius-md); padding: 12px; font-size: 12px; font-family: var(--font-mono); overflow-x: auto; white-space: pre; line-height: 1.6; color: var(--color-text-primary); margin: 10px 0; }
+.qcard-body p { font-size: 14px; color: var(--color-text-secondary); line-height: 1.7; margin-top: 10px; }
+.qcard-body ul { margin-top: 8px; padding-left: 18px; }
+.qcard-body ul li { font-size: 14px; color: var(--color-text-secondary); line-height: 1.7; }
+.tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px; margin-right: 4px; margin-top: 10px; }
+.tag-hard { background: var(--color-background-danger); color: var(--color-text-danger); }
+.tag-med { background: var(--color-background-warning); color: var(--color-text-warning); }
+.tag-easy { background: var(--color-background-success); color: var(--color-text-success); }
+.section-label { font-size: 12px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin: 6px 0 4px; }
+.deep-dive { display: inline-block; margin-top: 10px; font-size: 13px; color: var(--color-text-info); cursor: pointer; background: none; border: none; padding: 0; }
+.deep-dive:hover { text-decoration: underline; }
+</style>
+
+<div class="container">
+<h2 class="sr-only">Go senior developer interview question bank with answers, organized by topic</h2>
+<div class="header">
+  <h2>Go senior developer — interview prep</h2>
+  <p>Click a question to reveal the answer. Use the tabs to filter by topic.</p>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="progress" id="progress"></div>
+<div id="qlist"></div>
+</div>
+
+<script>
+const data = {
+  "Go Core": [
+    {
+      q: "What is the difference between goroutines and OS threads?",
+      diff: "med",
+      answer: `Goroutines are multiplexed onto a small number of OS threads by the Go runtime scheduler (M:N threading). A fresh goroutine costs ~2 KB of stack vs ~1 MB for a thread, and the runtime grows/shrinks stacks dynamically.`,
+      code: `// Spawning 100,000 goroutines is fine
+for i := 0; i < 100_000; i++ {
+    go func(n int) {
+        time.Sleep(time.Second)
+        fmt.Println(n)
+    }(i)
+}`
+    },
+    {
+      q: "Explain Go's memory model and the happens-before relationship.",
+      diff: "hard",
+      answer: `Go's memory model defines when reads of a variable are guaranteed to observe writes. A write W to variable x is observed by read R if W happens-before R and no other write interferes. Synchronization primitives (channels, sync.Mutex, sync.WaitGroup) establish happens-before edges.`,
+      code: `var x int
+var wg sync.WaitGroup
+wg.Add(1)
+go func() {
+    x = 42         // write
+    wg.Done()      // signals happens-before
+}()
+wg.Wait()          // establishes happens-before
+fmt.Println(x)     // safe to read 42`
+    },
+    {
+      q: "How does the Go scheduler work? Describe GOMAXPROCS and work-stealing.",
+      diff: "hard",
+      answer: `The Go scheduler uses a three-level model: G (goroutine), M (OS thread), P (processor). Each P holds a local run queue. When a P's queue is empty it steals goroutines from other Ps. GOMAXPROCS sets the number of active Ps (defaults to CPU count). Blocking syscalls park the M and a new M is brought in to service the P.`,
+      code: `// Set parallelism explicitly
+runtime.GOMAXPROCS(4)
+fmt.Println("Num CPU:", runtime.NumCPU())
+fmt.Println("Num Goroutines:", runtime.NumGoroutine())`
+    },
+    {
+      q: "What are channels and how do buffered vs unbuffered channels differ?",
+      diff: "easy",
+      answer: `Channels are typed conduits for goroutine communication. An unbuffered channel blocks the sender until a receiver is ready (synchronous rendezvous). A buffered channel allows sends up to its capacity without blocking.`,
+      code: `unbuf := make(chan int)       // blocks until received
+buf   := make(chan int, 10)   // non-blocking until full
+
+// Fan-out pattern
+jobs := make(chan int, 100)
+for w := 0; w < 4; w++ {
+    go worker(jobs)
+}
+for j := 0; j < 100; j++ {
+    jobs <- j
+}`
+    },
+    {
+      q: "Explain interfaces, embedding, and how Go achieves polymorphism.",
+      diff: "med",
+      answer: `Go uses implicit interface satisfaction — any type with the required methods satisfies an interface without declaring so. Struct embedding promotes methods to the outer type. This achieves composition-based polymorphism without inheritance.`,
+      code: `type Stringer interface{ String() string }
+
+type User struct{ Name string }
+func (u User) String() string { return u.Name }
+
+type Admin struct {
+    User                      // embed — inherits String()
+    Level int
+}
+// Admin satisfies Stringer automatically`
+    },
+    {
+      q: "How does garbage collection work in Go? What are STW pauses?",
+      diff: "hard",
+      answer: `Go uses a tri-color concurrent mark-and-sweep GC. Most work runs concurrently with goroutines. Short stop-the-world (STW) pauses occur at the start (mark setup) and end (mark termination) of each GC cycle — typically < 1 ms. GOGC controls heap growth ratio (default 100 = double before next GC).`,
+      code: `// Tune GC for low-latency services
+// GOGC=200  → less frequent GC, more memory
+// GOGC=off  → disable (manual runtime.GC())
+// GOMEMLIMIT=512MiB → soft memory cap (Go 1.19+)
+debug.SetGCPercent(200)
+debug.SetMemoryLimit(512 << 20)`
+    },
+    {
+      q: "What is a data race and how do you detect and prevent one?",
+      diff: "med",
+      answer: `A data race occurs when two goroutines access the same memory location concurrently and at least one is a write, without synchronization. Use go test -race or go run -race to detect. Prevent with sync.Mutex, sync/atomic, or channel-based ownership.`,
+      code: `// Race condition:
+var count int
+go func() { count++ }()  // unsynchronized write
+go func() { count++ }()
+
+// Fix with atomic:
+var count int64
+go func() { atomic.AddInt64(&count, 1) }()
+go func() { atomic.AddInt64(&count, 1) }()`
+    },
+    {
+      q: "Describe context.Context — when and how should it be used?",
+      diff: "med",
+      answer: `context.Context carries cancellation signals, deadlines, and request-scoped values across API boundaries. Pass it as the first argument to any function that may block or do I/O. Never store it in a struct. Cancel derived contexts to free resources.`,
+      code: `func fetchUser(ctx context.Context, id int) (*User, error) {
+    ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+    defer cancel()
+
+    req, _ := http.NewRequestWithContext(ctx, "GET",
+        fmt.Sprintf("/users/%d", id), nil)
+    resp, err := http.DefaultClient.Do(req)
+    if err != nil {
+        return nil, err  // includes context.DeadlineExceeded
+    }
+    defer resp.Body.Close()
+    // ...
+}`
+    }
+  ],
+  "Concurrency": [
+    {
+      q: "How do you implement a worker pool in Go?",
+      diff: "med",
+      answer: `A worker pool limits concurrent goroutines. A buffered jobs channel feeds N worker goroutines; a results channel collects output. A WaitGroup ensures all workers finish before closing results.`,
+      code: `func workerPool(jobs <-chan Job, numWorkers int) <-chan Result {
+    results := make(chan Result, len(jobs))
+    var wg sync.WaitGroup
+    for i := 0; i < numWorkers; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            for j := range jobs {
+                results <- process(j)
+            }
+        }()
+    }
+    go func() { wg.Wait(); close(results) }()
+    return results
+}`
+    },
+    {
+      q: "What is a sync.Map and when should you prefer it over a mutex-protected map?",
+      diff: "med",
+      answer: `sync.Map is optimized for two use cases: (1) write-once, read-many keys (like caches), and (2) keys written and read by disjoint goroutines. For general-purpose concurrent maps with frequent writes, a mutex-protected map is often faster due to lower overhead.`,
+      code: `var m sync.Map
+m.Store("key", "value")
+if v, ok := m.Load("key"); ok {
+    fmt.Println(v)
+}
+m.Range(func(k, v any) bool {
+    fmt.Println(k, v)
+    return true  // continue iterating
+})`
+    },
+    {
+      q: "Explain select statement and how to implement timeouts and cancellation.",
+      diff: "med",
+      answer: `select chooses a ready channel case randomly. Use time.After for timeouts and context.Done() for cancellation. A default case makes select non-blocking.`,
+      code: `func doWork(ctx context.Context) error {
+    for {
+        select {
+        case <-ctx.Done():
+            return ctx.Err()           // cancelled or timed out
+        case result := <-workCh:
+            process(result)
+        case <-time.After(30 * time.Second):
+            return errors.New("idle timeout")
+        }
+    }
+}`
+    }
+  ],
+  "Distributed Systems": [
+    {
+      q: "How would you implement distributed tracing in a Go microservice?",
+      diff: "hard",
+      answer: `Use OpenTelemetry SDK. Each service creates spans with trace/span IDs propagated via HTTP headers (W3C traceparent). Export to Jaeger, Zipkin, or OTLP collector. Instrument HTTP clients, database calls, and inter-service calls.`,
+      code: `tp := trace.NewTracerProvider(
+    trace.WithBatcher(otlpExporter),
+)
+otel.SetTracerProvider(tp)
+tracer := otel.Tracer("my-service")
+
+func handleRequest(w http.ResponseWriter, r *http.Request) {
+    ctx, span := tracer.Start(r.Context(), "handleRequest")
+    defer span.End()
+    span.SetAttributes(attribute.String("user.id", userID))
+    // propagate ctx to downstream calls
+    callDownstream(ctx)
+}`
+    },
+    {
+      q: "Explain the CAP theorem and how it applies to system design decisions.",
+      diff: "hard",
+      answer: `CAP theorem states a distributed system can guarantee at most two of: Consistency (every read sees the latest write), Availability (every request gets a response), Partition tolerance (system works despite network splits). Since partitions are unavoidable, real systems choose CP (e.g. etcd, ZooKeeper) or AP (e.g. Cassandra, DynamoDB). Go services often use AP stores with eventual consistency and compensating logic.`,
+      code: `// CP example: use etcd for distributed lock
+cli, _ := clientv3.New(clientv3.Config{Endpoints: []string{"localhost:2379"}})
+sess, _ := concurrency.NewSession(cli)
+mu := concurrency.NewMutex(sess, "/my-lock")
+mu.Lock(ctx)
+defer mu.Unlock(ctx)`
+    },
+    {
+      q: "How do you implement a circuit breaker pattern in Go?",
+      diff: "hard",
+      answer: `A circuit breaker has three states: Closed (normal), Open (failing fast), Half-Open (testing recovery). Libraries like sony/gobreaker or resilience4j-go handle state transitions. Implement manually with an atomic state variable and failure counters.`,
+      code: `import "github.com/sony/gobreaker"
+
+cb := gobreaker.NewCircuitBreaker(gobreaker.Settings{
+    Name:        "HTTP-Service",
+    MaxRequests: 3,                    // half-open probe requests
+    Interval:    60 * time.Second,     // closed-state error window
+    Timeout:     30 * time.Second,     // open → half-open wait
+    ReadyToTrip: func(counts gobreaker.Counts) bool {
+        return counts.ConsecutiveFailures > 5
+    },
+})
+
+result, err := cb.Execute(func() (any, error) {
+    return http.Get("http://downstream/api")
+})`
+    },
+    {
+      q: "How would you design an idempotent API endpoint in Go?",
+      diff: "hard",
+      answer: `Accept an Idempotency-Key header. On first request, process and store result with key in Redis/DB with TTL. On retry, return stored result without reprocessing. Use a distributed lock to prevent concurrent duplicate processing.`,
+      code: `func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
+    key := r.Header.Get("Idempotency-Key")
+    if key == "" {
+        http.Error(w, "missing idempotency key", 400)
+        return
+    }
+    // Check cache first
+    if cached, err := h.redis.Get(ctx, "idem:"+key).Bytes(); err == nil {
+        w.Write(cached); return
+    }
+    // Acquire lock, process, store result
+    result := h.processOrder(r)
+    h.redis.Set(ctx, "idem:"+key, result, 24*time.Hour)
+    w.Write(result)
+}`
+    }
+  ],
+  "Git & CI/CD": [
+    {
+      q: "Describe your Git branching strategy for a team of 10+ engineers.",
+      diff: "med",
+      answer: `Trunk-based development with short-lived feature branches (< 2 days) is preferred at scale. Engineers branch off main, open PRs, get CI green, and merge via squash. Feature flags decouple deploy from release. Gitflow is an alternative for versioned releases with release/ and hotfix/ branches.`,
+      code: `# Trunk-based flow
+git checkout -b feat/TICKET-123-add-payment
+# ... code, commit ...
+git push origin feat/TICKET-123-add-payment
+# Open PR → CI runs → code review → squash merge to main
+# Deploy via pipeline on every main push
+# Feature flag controls visibility`
+    },
+    {
+      q: "How do you design a CI/CD pipeline for a Go microservice?",
+      diff: "med",
+      answer: `A typical Go pipeline: lint (golangci-lint) → test (go test -race -cover) → build binary → docker build → push image → deploy to staging → integration tests → promote to production. Use caching for Go module downloads. Fail fast on lint/test before building.`,
+      code: `# .github/workflows/ci.yml (GitHub Actions)
+jobs:
+  build:
+    steps:
+      - uses: actions/setup-go@v4
+        with: { go-version: '1.22' }
+      - uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
+      - run: golangci-lint run ./...
+      - run: go test -race -coverprofile=coverage.out ./...
+      - run: go build -ldflags="-s -w" -o app ./cmd/server
+      - run: docker build -t myapp:${{ github.sha }} .`
+    },
+    {
+      q: "What is the difference between blue-green and canary deployments?",
+      diff: "med",
+      answer: `Blue-green: maintain two identical environments; flip traffic 100% from old (blue) to new (green) instantly. Fast rollback by flipping back. Canary: route a small % of traffic (e.g. 5%) to the new version, monitor metrics, gradually increase to 100%. Canary catches issues with real traffic before full rollout.`,
+      code: `# Kubernetes canary with traffic split
+# v1 deployment: 9 replicas (90% traffic via random pod selection)
+# v2 deployment: 1 replica (10% traffic)
+# Or use Argo Rollouts / Istio for precise weight-based routing:
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+spec:
+  strategy:
+    canary:
+      steps:
+        - setWeight: 10
+        - pause: { duration: 5m }
+        - setWeight: 50
+        - pause: { duration: 10m }`
+    },
+    {
+      q: "How do you handle secrets in a CI/CD pipeline?",
+      diff: "med",
+      answer: `Never store secrets in code or environment variables that get logged. Use a secrets manager: Vault, AWS Secrets Manager, or GCP Secret Manager. In CI: inject at runtime via OIDC short-lived tokens (avoid long-lived CI credentials). Kubernetes: use external-secrets-operator to sync secrets into K8s Secrets from Vault.`,
+      code: `# GitHub Actions — OIDC to AWS Secrets Manager
+- uses: aws-actions/configure-aws-credentials@v4
+  with:
+    role-to-assume: arn:aws:iam::ACCOUNT:role/ci-role
+    aws-region: us-east-1
+    # No static credentials — OIDC token exchange
+
+- name: Fetch secret
+  run: |
+    DB_PASS=$(aws secretsmanager get-secret-value \
+      --secret-id prod/db/password --query SecretString --output text)
+    echo "::add-mask::$DB_PASS"  # mask from logs`
+    }
+  ],
+  "Monitoring": [
+    {
+      q: "What are the four golden signals and how do you instrument them in Go?",
+      diff: "med",
+      answer: `The four golden signals (from Google SRE): Latency (time to serve a request), Traffic (requests/sec), Errors (rate of failed requests), Saturation (how full the system is). Use Prometheus + prometheus/client_golang to expose these as metrics.`,
+      code: `var (
+    httpDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
+        Name:    "http_request_duration_seconds",
+        Buckets: []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5},
+    }, []string{"route", "method", "status"})
+
+    requestTotal = promauto.NewCounterVec(prometheus.CounterOpts{
+        Name: "http_requests_total",
+    }, []string{"route", "method", "status"})
+)
+
+func middleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        start := time.Now()
+        rw := &responseWriter{ResponseWriter: w}
+        next.ServeHTTP(rw, r)
+        dur := time.Since(start).Seconds()
+        status := strconv.Itoa(rw.status)
+        httpDuration.WithLabelValues(r.URL.Path, r.Method, status).Observe(dur)
+        requestTotal.WithLabelValues(r.URL.Path, r.Method, status).Inc()
+    })
+}`
+    },
+    {
+      q: "How do you implement structured logging in Go?",
+      diff: "easy",
+      answer: `Use slog (Go 1.21+) or zerolog/zap for structured JSON logging. Include trace_id, span_id, service, level, and request context in every log line. Avoid fmt.Println in production code.`,
+      code: `// Go 1.21+ slog
+logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+    Level: slog.LevelInfo,
+}))
+slog.SetDefault(logger)
+
+func handleOrder(ctx context.Context, orderID string) {
+    traceID := trace.SpanFromContext(ctx).SpanContext().TraceID()
+    slog.InfoContext(ctx, "processing order",
+        "order_id", orderID,
+        "trace_id", traceID.String(),
+        "service", "order-service",
+    )
+}`
+    },
+    {
+      q: "What is a Service Level Objective (SLO) and how do you implement error budgets?",
+      diff: "hard",
+      answer: `An SLO is a target reliability level (e.g. 99.9% of requests < 200ms). Error budget = 1 - SLO = allowed unreliability (0.1% = 43 min/month downtime). Track burn rate: if you're burning budget 14x faster than normal, alert and freeze non-critical changes. Use Prometheus recording rules + Alertmanager for burn rate alerts.`,
+      code: `# Prometheus recording rule for error rate
+- record: job:http_errors:rate5m
+  expr: |
+    sum(rate(http_requests_total{status=~"5.."}[5m]))
+    /
+    sum(rate(http_requests_total[5m]))
+
+# Alert: burning error budget 14x fast (1-hour window)
+- alert: ErrorBudgetBurnRateHigh
+  expr: |
+    job:http_errors:rate5m > (14 * (1 - 0.999))
+  for: 2m
+  labels: { severity: critical }`
+    }
+  ],
+  "Performance": [
+    {
+      q: "How do you profile a Go application? Walk through CPU and memory profiling.",
+      diff: "med",
+      answer: `Go has built-in pprof. Expose net/http/pprof endpoints in non-prod or use runtime/pprof for file-based profiling. Collect CPU profile under load, then analyze with go tool pprof. For memory: heap profiles show allocations. Use benchmarks with -memprofile to isolate allocations.`,
+      code: `// Expose pprof (behind auth in prod)
+import _ "net/http/pprof"
+go http.ListenAndServe(":6060", nil)
+
+// Collect and analyze:
+// go tool pprof http://localhost:6060/debug/pprof/profile?seconds=30
+// go tool pprof http://localhost:6060/debug/pprof/heap
+// (pprof) top10
+// (pprof) web        ← flame graph
+// (pprof) list myFunc`
+    },
+    {
+      q: "What are common causes of memory allocations/escapes in Go and how do you reduce them?",
+      diff: "hard",
+      answer: `Allocations happen when variables escape to heap: returning pointer to local var, storing in interface, closures capturing variables, slices/maps growing beyond capacity. Use escape analysis (go build -gcflags='-m') and sync.Pool for reusing objects. Prefer value types over pointers for small structs.`,
+      code: `// Avoid: allocates a new buffer each call
+func buildMsg(data []byte) string {
+    var buf bytes.Buffer       // escapes to heap
+    buf.Write(data)
+    return buf.String()
+}
+
+// Better: pool buffers
+var bufPool = sync.Pool{
+    New: func() any { return new(bytes.Buffer) },
+}
+func buildMsg(data []byte) string {
+    buf := bufPool.Get().(*bytes.Buffer)
+    defer func() { buf.Reset(); bufPool.Put(buf) }()
+    buf.Write(data)
+    return buf.String()
+}`
+    },
+    {
+      q: "How do you write and interpret Go benchmarks? What is benchstat?",
+      diff: "med",
+      answer: `Go benchmarks use testing.B. Run with go test -bench=. -benchmem to see ns/op and allocs/op. benchstat from golang.org/x/perf/cmd/benchstat compares two benchmark runs statistically, reporting % change and p-values so you know if an optimization is significant.`,
+      code: `func BenchmarkJSONMarshal(b *testing.B) {
+    u := User{Name: "Alice", Age: 30}
+    b.ReportAllocs()
+    b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+        _, err := json.Marshal(u)
+        if err != nil {
+            b.Fatal(err)
+        }
+    }
+}
+
+// Run & compare:
+// go test -bench=. -count=5 > before.txt
+// (make change)
+// go test -bench=. -count=5 > after.txt
+// benchstat before.txt after.txt`
+    },
+    {
+      q: "How do you handle high-throughput JSON processing efficiently in Go?",
+      diff: "hard",
+      answer: `encoding/json uses reflection and is allocation-heavy. Alternatives: easyjson or jsoniter for code-gen based marshaling (3-5x faster), sonic (SIMD-based), or gjson for read-only path queries. For streaming large responses, use json.Decoder to avoid loading entire payload into memory.`,
+      code: `// Streaming decode — don't read entire body
+func decodeStream(r io.Reader) error {
+    dec := json.NewDecoder(r)
+    dec.Token()            // read '['
+    for dec.More() {
+        var item Item
+        if err := dec.Decode(&item); err != nil {
+            return err
+        }
+        process(item)
+    }
+    return nil
+}
+
+// jsoniter drop-in (3-4x faster)
+import jsoniter "github.com/json-iterator/go"
+var json = jsoniter.ConfigCompatibleWithStandardLibrary`
+    }
+  ]
+};
+
+const categories = Object.keys(data);
+let activeTab = categories[0];
+let openIdx = null;
+
+function render() {
+  const tabsEl = document.getElementById('tabs');
+  const qlistEl = document.getElementById('qlist');
+  const progressEl = document.getElementById('progress');
+
+  tabsEl.innerHTML = categories.map(c =>
+    `<div class="tab${c === activeTab ? ' active' : ''}" onclick="setTab('${c}')">${c}</div>`
+  ).join('');
+
+  const qs = data[activeTab];
+  progressEl.textContent = `${qs.length} questions`;
+  qlistEl.innerHTML = qs.map((q, i) => {
+    const isOpen = openIdx === i;
+    const diffClass = q.diff === 'hard' ? 'tag-hard' : q.diff === 'med' ? 'tag-med' : 'tag-easy';
+    const diffLabel = q.diff === 'hard' ? 'Senior' : q.diff === 'med' ? 'Mid' : 'Fundamental';
+    return `<div class="qcard">
+      <div class="qcard-header" onclick="toggleQ(${i})">
+        <div class="q-left">
+          <span class="q-num">${i+1}.</span>
+          <span class="q-text">${q.q}</span>
+        </div>
+        <span class="q-arrow${isOpen ? ' open' : ''}">▾</span>
+      </div>
+      ${isOpen ? `<div class="qcard-body">
+        <span class="tag ${diffClass}">${diffLabel}</span>
+        <p>${q.answer}</p>
+        ${q.code ? `<div class="section-label">Example</div><pre>${escHtml(q.code)}</pre>` : ''}
+        <button class="deep-dive" onclick="deepDive('${escAttr(q.q)}')">Ask Claude for a deeper dive ↗</button>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escAttr(s) { return s.replace(/'/g,"\\'"); }
+
+function setTab(t) { activeTab = t; openIdx = null; render(); }
+function toggleQ(i) { openIdx = openIdx === i ? null : i; render(); }
+function deepDive(q) { sendPrompt('Can you go deeper on this Go interview topic: ' + q); }
+
+render();
+</script>

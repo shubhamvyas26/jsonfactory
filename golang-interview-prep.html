@@ -1,0 +1,3220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Senior Golang Engineer Interview Prep</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+
+:root {
+  --bg: #080c10;
+  --bg2: #0d1117;
+  --bg3: #161b22;
+  --bg4: #1c2330;
+  --border: #21262d;
+  --border2: #30363d;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --accent: #00d8a0;
+  --accent2: #00b37e;
+  --accent3: rgba(0,216,160,0.12);
+  --blue: #58a6ff;
+  --purple: #bc8cff;
+  --orange: #ffa657;
+  --red: #ff6e6e;
+  --yellow: #e3b341;
+  --easy: #3fb950;
+  --medium: #e3b341;
+  --hard: #ff6e6e;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-code: 'Space Mono', monospace;
+  --radius: 8px;
+  --radius-lg: 14px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-accent: 0 0 30px rgba(0,216,160,0.1);
+  --nav-h: 60px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── Header ── */
+header {
+  position: relative;
+  padding: 72px 24px 56px;
+  text-align: center;
+  overflow: hidden;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% -10%, rgba(0,216,160,0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 40% at 20% 80%, rgba(88,166,255,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent3);
+  border: 1px solid rgba(0,216,160,0.3);
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  padding: 5px 14px;
+  border-radius: 100px;
+  margin-bottom: 20px;
+  letter-spacing: 0.05em;
+}
+
+.header-badge::before {
+  content: '';
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.5; transform:scale(0.85); }
+}
+
+header h1 {
+  font-family: var(--font-head);
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+header h1 span { color: var(--accent); }
+
+header p {
+  font-size: 1.05rem;
+  color: var(--text2);
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* ── Sticky Nav ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8,12,16,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+}
+
+.nav-inner {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav-inner::-webkit-scrollbar { display: none; }
+
+.nav-link {
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text2);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 100px;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.nav-link:hover {
+  color: var(--text);
+  background: var(--bg3);
+  border-color: var(--border2);
+}
+
+.nav-link.active {
+  color: var(--accent);
+  background: var(--accent3);
+  border-color: rgba(0,216,160,0.25);
+}
+
+/* ── Search ── */
+.search-wrap {
+  max-width: 1200px;
+  margin: 40px auto 0;
+  padding: 0 24px;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box svg {
+  position: absolute;
+  left: 16px;
+  color: var(--text3);
+  pointer-events: none;
+}
+
+#search {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 13px 16px 13px 46px;
+  border-radius: var(--radius-lg);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent3);
+}
+
+#search::placeholder { color: var(--text3); }
+
+.search-count {
+  position: absolute;
+  right: 16px;
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  color: var(--text3);
+}
+
+/* ── Layout ── */
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  position: sticky;
+  top: calc(var(--nav-h) + 24px);
+}
+
+.sidebar-title {
+  font-family: var(--font-code);
+  font-size: 0.68rem;
+  color: var(--text3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-left: 12px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 400;
+  transition: all 0.18s;
+  border-left: 2px solid transparent;
+}
+
+.sidebar-link:hover { color: var(--text); background: var(--bg3); }
+.sidebar-link.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent3); }
+
+.sidebar-link .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border2);
+  flex-shrink: 0;
+}
+
+.sidebar-link.active .dot { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+
+/* ── Sections ── */
+.section {
+  margin-bottom: 64px;
+  scroll-margin-top: calc(var(--nav-h) + 24px);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.section-icon {
+  width: 42px; height: 42px;
+  border-radius: var(--radius);
+  background: var(--accent3);
+  border: 1px solid rgba(0,216,160,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.section-title-wrap h2 {
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.section-title-wrap p {
+  font-size: 0.83rem;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* ── Question Cards ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.card:hover { border-color: var(--border2); }
+.card.open { border-color: var(--accent); box-shadow: var(--shadow-accent); }
+.card.hidden { display: none; }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+
+.card-header::-webkit-details-marker { display: none; }
+
+.card-num {
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  color: var(--text3);
+  min-width: 28px;
+}
+
+.card-q {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.tags { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+.tag {
+  font-family: var(--font-code);
+  font-size: 0.67rem;
+  padding: 3px 9px;
+  border-radius: 100px;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.tag-easy { background: rgba(63,185,80,0.12); color: var(--easy); border: 1px solid rgba(63,185,80,0.2); }
+.tag-medium { background: rgba(227,179,65,0.12); color: var(--medium); border: 1px solid rgba(227,179,65,0.2); }
+.tag-hard { background: rgba(255,110,110,0.12); color: var(--hard); border: 1px solid rgba(255,110,110,0.2); }
+
+.chevron {
+  color: var(--text3);
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+  flex-shrink: 0;
+}
+
+details[open] .chevron { transform: rotate(180deg); }
+
+.card-body {
+  padding: 0 20px 20px 20px;
+  animation: slideDown 0.22s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card-body p {
+  font-size: 0.92rem;
+  color: var(--text2);
+  margin-bottom: 12px;
+  line-height: 1.75;
+}
+
+.card-body ul, .card-body ol {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.card-body li {
+  font-size: 0.91rem;
+  color: var(--text2);
+  margin-bottom: 6px;
+  line-height: 1.65;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 0 18px 0;
+}
+
+/* ── Code ── */
+.code-wrap {
+  position: relative;
+  margin: 14px 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border2);
+}
+
+.code-lang {
+  background: var(--bg4);
+  padding: 7px 14px;
+  font-family: var(--font-code);
+  font-size: 0.7rem;
+  color: var(--text3);
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.copy-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: var(--font-code);
+  font-size: 0.68rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.03em;
+}
+
+.copy-btn:hover { background: var(--accent3); color: var(--accent); border-color: rgba(0,216,160,0.3); }
+.copy-btn.copied { color: var(--easy); border-color: rgba(63,185,80,0.4); }
+
+pre {
+  background: var(--bg);
+  overflow-x: auto;
+  padding: 16px 18px;
+  margin: 0;
+}
+
+code {
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+/* Go syntax highlighting */
+.kw { color: #ff7b72; }
+.fn { color: #79c0ff; }
+.str { color: #a5d6ff; }
+.cmt { color: #8b949e; font-style: italic; }
+.num { color: var(--orange); }
+.typ { color: #ffa657; }
+.pkg { color: var(--accent); }
+
+/* ── Tip/Note ── */
+.tip {
+  background: rgba(88,166,255,0.07);
+  border: 1px solid rgba(88,166,255,0.2);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-size: 0.88rem;
+  color: var(--text2);
+}
+
+.tip strong { color: var(--blue); }
+
+.warn {
+  background: rgba(255,110,110,0.07);
+  border: 1px solid rgba(255,110,110,0.18);
+  border-left: 3px solid var(--red);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-size: 0.88rem;
+  color: var(--text2);
+}
+
+.warn strong { color: var(--red); }
+
+.success {
+  background: rgba(0,216,160,0.06);
+  border: 1px solid rgba(0,216,160,0.2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-size: 0.88rem;
+  color: var(--text2);
+}
+
+.success strong { color: var(--accent); }
+
+/* ── No results ── */
+.no-results {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--text3);
+  font-size: 0.95rem;
+  display: none;
+}
+
+.no-results.show { display: block; }
+
+/* ── Progress ── */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--accent);
+  z-index: 999;
+  transition: width 0.1s;
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* ── Mobile ── */
+@media (max-width: 900px) {
+  .content { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+}
+
+@media (max-width: 600px) {
+  header { padding: 48px 16px 40px; }
+  .search-wrap { padding: 0 16px; }
+  .content { padding: 32px 16px 60px; }
+  .card-header { padding: 14px 16px; gap: 10px; }
+  .card-body { padding: 0 16px 16px; }
+  .card-q { font-size: 0.88rem; }
+  .tags { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-badge">INTERVIEW PREP GUIDE</div>
+  <h1>Senior <span>Golang</span> Engineer<br>Interview Prep</h1>
+  <p>Comprehensive guide covering advanced Go internals, concurrency, system design, DevOps, and observability.</p>
+</header>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-link" href="#golang">⚙ Advanced Go</a>
+    <a class="nav-link" href="#memory">🧠 Memory & GC</a>
+    <a class="nav-link" href="#git">🔀 Git Deep Dive</a>
+    <a class="nav-link" href="#cicd">🚀 CI/CD</a>
+    <a class="nav-link" href="#distributed">🌐 Distributed</a>
+    <a class="nav-link" href="#monitoring">📊 Observability</a>
+    <a class="nav-link" href="#perf">⚡ Performance</a>
+  </div>
+</nav>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+  <div class="search-box">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="Search questions…" autocomplete="off">
+    <span class="search-count" id="searchCount"></span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Sections</div>
+    <a class="sidebar-link" href="#golang"><span class="dot"></span> Advanced Golang</a>
+    <a class="sidebar-link" href="#memory"><span class="dot"></span> Memory & GC</a>
+    <a class="sidebar-link" href="#git"><span class="dot"></span> Git Deep Dive</a>
+    <a class="sidebar-link" href="#cicd"><span class="dot"></span> CI/CD Concepts</a>
+    <a class="sidebar-link" href="#distributed"><span class="dot"></span> Distributed Systems</a>
+    <a class="sidebar-link" href="#monitoring"><span class="dot"></span> Observability</a>
+    <a class="sidebar-link" href="#perf"><span class="dot"></span> Performance</a>
+  </aside>
+
+  <!-- QUESTIONS -->
+  <main>
+    <div class="no-results" id="noResults">No questions match your search.</div>
+
+    <!-- ── SECTION 1: ADVANCED GOLANG ── -->
+    <section class="section" id="golang">
+      <div class="section-header">
+        <div class="section-icon">⚙</div>
+        <div class="section-title-wrap">
+          <h2>Advanced Golang Questions</h2>
+          <p>Internals, concurrency patterns, interfaces, and runtime behavior</p>
+        </div>
+      </div>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">01</span>
+          <span class="card-q">Explain how Go's goroutine scheduler (GMP model) works under the hood.</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Go uses a <strong>GMP model</strong>: <strong>G</strong> (Goroutine), <strong>M</strong> (OS Thread), <strong>P</strong> (Processor/Logical CPU). Each P has a local run queue of goroutines. Ms execute Gs via Ps.</p>
+          <ul>
+            <li><strong>G</strong> — lightweight goroutine (~2KB initial stack, grows dynamically)</li>
+            <li><strong>M</strong> — OS thread; can block on syscalls without blocking others</li>
+            <li><strong>P</strong> — context; holds local run queue and caches; count = GOMAXPROCS</li>
+          </ul>
+          <p>When a G blocks on a syscall, the P detaches from M and finds/creates another M to continue running other Gs (handoff). Work-stealing: idle Ps steal goroutines from other Ps' run queues.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// Set the number of OS threads that can execute simultaneously</span>
+<span class="kw">import</span> <span class="str">"runtime"</span>
+
+<span class="fn">func</span> <span class="fn">main</span>() {
+    runtime.<span class="fn">GOMAXPROCS</span>(<span class="num">4</span>) <span class="cmt">// 4 Ps = 4 goroutines truly parallel</span>
+    
+    <span class="cmt">// Check number of current goroutines</span>
+    n := runtime.<span class="fn">NumGoroutine</span>()
+    fmt.<span class="fn">Println</span>(<span class="str">"goroutines:"</span>, n)
+}</code></pre>
+          </div>
+          <div class="tip"><strong>💡 Key insight:</strong> GOMAXPROCS defaults to the number of CPU cores since Go 1.5. Increasing it beyond CPU count rarely helps and adds scheduling overhead.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">02</span>
+          <span class="card-q">What is the difference between a goroutine leak and how do you detect/prevent it?</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>A goroutine leak occurs when goroutines are spawned but never terminate — they stay blocked on channels, mutexes, or waiting for I/O that never completes, consuming memory and CPU.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — LEAK example</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// ❌ Goroutine leaks: channel send with no receiver</span>
+<span class="kw">func</span> <span class="fn">leaky</span>(ch <span class="kw">chan</span> <span class="typ">int</span>) {
+    <span class="kw">go func</span>() {
+        ch &lt;- <span class="num">42</span> <span class="cmt">// blocks forever if no one reads</span>
+    }()
+}
+
+<span class="cmt">// ✅ Fix: use context for cancellation</span>
+<span class="kw">func</span> <span class="fn">safe</span>(ctx context.<span class="typ">Context</span>, ch <span class="kw">chan</span> <span class="typ">int</span>) {
+    <span class="kw">go func</span>() {
+        <span class="kw">select</span> {
+        <span class="kw">case</span> ch &lt;- <span class="num">42</span>:
+        <span class="kw">case</span> &lt;-ctx.<span class="fn">Done</span>():
+            <span class="kw">return</span> <span class="cmt">// goroutine exits cleanly</span>
+        }
+    }()
+}</code></pre>
+          </div>
+          <p><strong>Detection:</strong></p>
+          <ul>
+            <li>Use <code>runtime.NumGoroutine()</code> in tests to check before/after</li>
+            <li>Use <code>goleak</code> library (Uber) in unit tests</li>
+            <li>Use <code>pprof</code> goroutine profile endpoint in production</li>
+          </ul>
+          <div class="warn"><strong>⚠ Common causes:</strong> Forgotten goroutines blocked on unbuffered channels, http handlers without timeouts, range over unclosed channels.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">03</span>
+          <span class="card-q">How do interfaces work internally in Go? What are the performance implications of interface dispatch?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>An interface value in Go is a two-word data structure: <strong>itab pointer</strong> (type info + method table) and a <strong>data pointer</strong> (to the concrete value or a heap allocation).</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// Internal representation (simplified)</span>
+<span class="kw">type</span> <span class="typ">iface</span> <span class="kw">struct</span> {
+    tab  *itab         <span class="cmt">// points to type info + method table</span>
+    data unsafe.<span class="typ">Pointer</span> <span class="cmt">// points to concrete data</span>
+}
+
+<span class="cmt">// Small values stored inline (via pointer to stack copy)</span>
+<span class="cmt">// Large values heap-allocated on interface assignment</span>
+
+<span class="kw">type</span> <span class="typ">Animal</span> <span class="kw">interface</span> { <span class="fn">Speak</span>() <span class="typ">string</span> }
+
+<span class="kw">type</span> <span class="typ">Dog</span> <span class="kw">struct</span>{}
+<span class="kw">func</span> (d <span class="typ">Dog</span>) <span class="fn">Speak</span>() <span class="typ">string</span> { <span class="kw">return</span> <span class="str">"woof"</span> }
+
+<span class="kw">var</span> a <span class="typ">Animal</span> = <span class="typ">Dog</span>{}  <span class="cmt">// itab cached after first use</span></code></pre>
+          </div>
+          <p><strong>Performance implications:</strong></p>
+          <ul>
+            <li>Interface method call = indirect function call through vtable (~2-3x slower than direct call)</li>
+            <li>Assigning concrete type to interface can cause heap escape → GC pressure</li>
+            <li>itab is cached per (interface, concrete type) pair — not reconstructed every call</li>
+            <li>Type assertions have O(1) cost; type switches have O(n) unless reordered by compiler</li>
+          </ul>
+          <div class="tip"><strong>💡 Tip:</strong> Use concrete types in hot paths. Reserve interfaces for API boundaries. Benchmark with <code>go test -bench -gcflags="-m"</code> to see escape analysis.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">04</span>
+          <span class="card-q">Explain the difference between select with default, select without default, and time.After. What are the pitfalls?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// 1. select without default — BLOCKS until a case is ready</span>
+<span class="kw">select</span> {
+<span class="kw">case</span> v := &lt;-ch:
+    fmt.<span class="fn">Println</span>(v)
+}
+
+<span class="cmt">// 2. select with default — NON-BLOCKING, falls to default if no case ready</span>
+<span class="kw">select</span> {
+<span class="kw">case</span> v := &lt;-ch:
+    fmt.<span class="fn">Println</span>(v)
+<span class="kw">default</span>:
+    fmt.<span class="fn">Println</span>(<span class="str">"no message"</span>)
+}
+
+<span class="cmt">// 3. time.After — creates a channel, fires after duration</span>
+<span class="cmt">// ❌ PITFALL: leaks timer until it fires even after select completes</span>
+<span class="kw">select</span> {
+<span class="kw">case</span> v := &lt;-ch:
+    fmt.<span class="fn">Println</span>(v)
+<span class="kw">case</span> &lt;-time.<span class="fn">After</span>(<span class="num">1</span> * time.<span class="typ">Second</span>): <span class="cmt">// timer goroutine leaked until 1s</span>
+    fmt.<span class="fn">Println</span>(<span class="str">"timeout"</span>)
+}
+
+<span class="cmt">// ✅ FIX: reuse timer with Reset()</span>
+timer := time.<span class="fn">NewTimer</span>(<span class="num">1</span> * time.<span class="typ">Second</span>)
+<span class="kw">defer</span> timer.<span class="fn">Stop</span>()
+<span class="kw">select</span> {
+<span class="kw">case</span> v := &lt;-ch:
+    fmt.<span class="fn">Println</span>(v)
+<span class="kw">case</span> &lt;-timer.C:
+    fmt.<span class="fn">Println</span>(<span class="str">"timeout"</span>)
+}</code></pre>
+          </div>
+          <div class="warn"><strong>⚠ Pitfall:</strong> <code>time.After</code> in a tight loop causes significant GC pressure — each call allocates a new timer that's only GC'd after it fires.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">05</span>
+          <span class="card-q">What are Go generics (type parameters)? How do they differ from interface-based polymorphism?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Introduced in Go 1.18, generics allow type-parameterized functions and types resolved at compile time, eliminating runtime overhead of interface dispatch for type-agnostic algorithms.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// Generic function with constraint</span>
+<span class="kw">func</span> <span class="fn">Map</span>[T, U <span class="kw">any</span>](s []T, f <span class="kw">func</span>(T) U) []U {
+    result := <span class="fn">make</span>([]U, <span class="fn">len</span>(s))
+    <span class="kw">for</span> i, v := <span class="kw">range</span> s {
+        result[i] = <span class="fn">f</span>(v)
+    }
+    <span class="kw">return</span> result
+}
+
+<span class="cmt">// Type constraint using union</span>
+<span class="kw">type</span> <span class="typ">Number</span> <span class="kw">interface</span> {
+    ~<span class="typ">int</span> | ~<span class="typ">float64</span> | ~<span class="typ">int64</span>
+}
+
+<span class="kw">func</span> <span class="fn">Sum</span>[T <span class="typ">Number</span>](nums []T) T {
+    <span class="kw">var</span> total T
+    <span class="kw">for</span> _, n := <span class="kw">range</span> nums {
+        total += n
+    }
+    <span class="kw">return</span> total
+}
+
+<span class="cmt">// Usage — no boxing/unboxing overhead</span>
+ints := []<span class="typ">int</span>{<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>}
+fmt.<span class="fn">Println</span>(<span class="fn">Sum</span>(ints)) <span class="cmt">// 6</span></code></pre>
+          </div>
+          <p><strong>Generics vs. Interfaces:</strong></p>
+          <ul>
+            <li>Generics: compile-time monomorphization (or GC shapes), zero boxing overhead</li>
+            <li>Interfaces: runtime dispatch, heap escape possible, more flexible for heterogeneous collections</li>
+            <li>Use generics for algorithms; use interfaces for behavior abstraction</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">06</span>
+          <span class="card-q">Explain defer execution order, defer with named return values, and the panic/recover mechanism.</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// Defer is LIFO (last in, first out)</span>
+<span class="kw">func</span> <span class="fn">example</span>() {
+    <span class="kw">defer</span> fmt.<span class="fn">Println</span>(<span class="str">"1"</span>)
+    <span class="kw">defer</span> fmt.<span class="fn">Println</span>(<span class="str">"2"</span>)
+    <span class="kw">defer</span> fmt.<span class="fn">Println</span>(<span class="str">"3"</span>)
+    <span class="cmt">// prints: 3, 2, 1</span>
+}
+
+<span class="cmt">// Named return — defer can MODIFY return value</span>
+<span class="kw">func</span> <span class="fn">double</span>(x <span class="typ">int</span>) (result <span class="typ">int</span>) {
+    <span class="kw">defer func</span>() {
+        result *= <span class="num">2</span> <span class="cmt">// modifies named return!</span>
+    }()
+    result = x
+    <span class="kw">return</span> <span class="cmt">// returns x*2, not x</span>
+}
+
+<span class="cmt">// panic / recover — must be in same goroutine</span>
+<span class="kw">func</span> <span class="fn">safeDiv</span>(a, b <span class="typ">int</span>) (result <span class="typ">int</span>, err <span class="typ">error</span>) {
+    <span class="kw">defer func</span>() {
+        <span class="kw">if</span> r := <span class="fn">recover</span>(); r != <span class="kw">nil</span> {
+            err = fmt.<span class="fn">Errorf</span>(<span class="str">"recovered: %v"</span>, r)
+        }
+    }()
+    <span class="kw">return</span> a / b, <span class="kw">nil</span> <span class="cmt">// panics if b == 0</span>
+}</code></pre>
+          </div>
+          <div class="warn"><strong>⚠ Gotcha:</strong> Defer evaluates arguments immediately but runs the function later. <code>defer fmt.Println(i)</code> captures the current value of <code>i</code>, not its final value.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">07</span>
+          <span class="card-q">What is the difference between sync.Mutex, sync.RWMutex, and sync.Map? When to use each?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// sync.Mutex — exclusive lock, all ops serialized</span>
+<span class="kw">var</span> mu sync.<span class="typ">Mutex</span>
+mu.<span class="fn">Lock</span>()
+<span class="cmt">// critical section</span>
+mu.<span class="fn">Unlock</span>()
+
+<span class="cmt">// sync.RWMutex — multiple readers OR one writer</span>
+<span class="kw">var</span> rw sync.<span class="typ">RWMutex</span>
+
+<span class="cmt">// Read lock (shared)</span>
+rw.<span class="fn">RLock</span>()
+val := cache[key] <span class="cmt">// concurrent reads OK</span>
+rw.<span class="fn">RUnlock</span>()
+
+<span class="cmt">// Write lock (exclusive)</span>
+rw.<span class="fn">Lock</span>()
+cache[key] = val
+rw.<span class="fn">Unlock</span>()
+
+<span class="cmt">// sync.Map — specialized for high-concurrency, mostly-read workloads</span>
+<span class="kw">var</span> m sync.<span class="typ">Map</span>
+m.<span class="fn">Store</span>(<span class="str">"key"</span>, <span class="str">"value"</span>)
+v, ok := m.<span class="fn">Load</span>(<span class="str">"key"</span>)
+m.<span class="fn">LoadOrStore</span>(<span class="str">"key"</span>, <span class="str">"default"</span>)
+m.<span class="fn">Range</span>(<span class="kw">func</span>(k, v <span class="kw">any</span>) <span class="typ">bool</span> {
+    fmt.<span class="fn">Println</span>(k, v)
+    <span class="kw">return true</span>
+})</code></pre>
+          </div>
+          <p><strong>When to use each:</strong></p>
+          <ul>
+            <li><strong>Mutex:</strong> Write-heavy workloads, simple cases, when reads and writes are balanced</li>
+            <li><strong>RWMutex:</strong> Read-heavy workloads (10:1+ read/write ratio), caches</li>
+            <li><strong>sync.Map:</strong> Keys written once then read many times, or many disjoint goroutines with non-overlapping keys</li>
+          </ul>
+          <div class="tip"><strong>💡 Benchmark note:</strong> sync.Map has higher overhead per-op than a plain map+mutex for low contention. Always benchmark before switching.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">08</span>
+          <span class="card-q">Explain channels as first-class values, channel directions, and the fan-out/fan-in concurrency patterns.</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// Channel directions restrict usage at compile time</span>
+<span class="kw">func</span> <span class="fn">producer</span>(out <span class="kw">chan</span>&lt;- <span class="typ">int</span>) { <span class="cmt">// send-only</span>
+    <span class="kw">for</span> i := <span class="num">0</span>; i &lt; <span class="num">5</span>; i++ { out &lt;- i }
+    <span class="fn">close</span>(out)
+}
+
+<span class="kw">func</span> <span class="fn">consumer</span>(in &lt;-<span class="kw">chan</span> <span class="typ">int</span>) { <span class="cmt">// receive-only</span>
+    <span class="kw">for</span> v := <span class="kw">range</span> in { fmt.<span class="fn">Println</span>(v) }
+}
+
+<span class="cmt">// Fan-out: one producer, multiple consumers</span>
+<span class="kw">func</span> <span class="fn">fanOut</span>(in &lt;-<span class="kw">chan</span> <span class="typ">int</span>, workers <span class="typ">int</span>) []&lt;-<span class="kw">chan</span> <span class="typ">int</span> {
+    outs := <span class="fn">make</span>([]&lt;-<span class="kw">chan</span> <span class="typ">int</span>, workers)
+    <span class="kw">for</span> i := <span class="num">0</span>; i &lt; workers; i++ {
+        ch := <span class="fn">make</span>(<span class="kw">chan</span> <span class="typ">int</span>)
+        outs[i] = ch
+        <span class="kw">go func</span>(out <span class="kw">chan</span>&lt;- <span class="typ">int</span>) {
+            <span class="kw">for</span> v := <span class="kw">range</span> in { out &lt;- v }
+            <span class="fn">close</span>(out)
+        }(ch)
+    }
+    <span class="kw">return</span> outs
+}
+
+<span class="cmt">// Fan-in: merge multiple channels into one</span>
+<span class="kw">func</span> <span class="fn">fanIn</span>(channels ...&lt;-<span class="kw">chan</span> <span class="typ">int</span>) &lt;-<span class="kw">chan</span> <span class="typ">int</span> {
+    merged := <span class="fn">make</span>(<span class="kw">chan</span> <span class="typ">int</span>)
+    <span class="kw">var</span> wg sync.<span class="typ">WaitGroup</span>
+    <span class="kw">for</span> _, ch := <span class="kw">range</span> channels {
+        wg.<span class="fn">Add</span>(<span class="num">1</span>)
+        <span class="kw">go func</span>(c &lt;-<span class="kw">chan</span> <span class="typ">int</span>) {
+            <span class="kw">defer</span> wg.<span class="fn">Done</span>()
+            <span class="kw">for</span> v := <span class="kw">range</span> c { merged &lt;- v }
+        }(ch)
+    }
+    <span class="kw">go func</span>() { wg.<span class="fn">Wait</span>(); <span class="fn">close</span>(merged) }()
+    <span class="kw">return</span> merged
+}</code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">09</span>
+          <span class="card-q">What is the difference between errgroup, WaitGroup, and context cancellation for managing goroutine lifecycles?</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// sync.WaitGroup — wait for goroutines, no error handling</span>
+<span class="kw">var</span> wg sync.<span class="typ">WaitGroup</span>
+<span class="kw">for</span> _, url := <span class="kw">range</span> urls {
+    wg.<span class="fn">Add</span>(<span class="num">1</span>)
+    <span class="kw">go func</span>(u <span class="typ">string</span>) {
+        <span class="kw">defer</span> wg.<span class="fn">Done</span>()
+        fetch(u)
+    }(url)
+}
+wg.<span class="fn">Wait</span>()
+
+<span class="cmt">// errgroup — WaitGroup + error propagation + optional cancellation</span>
+g, ctx := errgroup.<span class="fn">WithContext</span>(context.<span class="fn">Background</span>())
+<span class="kw">for</span> _, url := <span class="kw">range</span> urls {
+    url := url <span class="cmt">// capture loop var (pre-Go 1.22)</span>
+    g.<span class="fn">Go</span>(<span class="kw">func</span>() <span class="typ">error</span> {
+        <span class="kw">return</span> <span class="fn">fetch</span>(ctx, url) <span class="cmt">// ctx cancelled on first error</span>
+    })
+}
+<span class="kw">if</span> err := g.<span class="fn">Wait</span>(); err != <span class="kw">nil</span> {
+    log.<span class="fn">Fatal</span>(err)
+}
+
+<span class="cmt">// errgroup.SetLimit — bounded parallelism</span>
+g.<span class="fn">SetLimit</span>(<span class="num">10</span>) <span class="cmt">// max 10 goroutines at once</span></code></pre>
+          </div>
+          <div class="success"><strong>✅ Best practice:</strong> Prefer <code>errgroup</code> from <code>golang.org/x/sync/errgroup</code> for most concurrent work. It composes context, errors, and WaitGroup into a clean API.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">10</span>
+          <span class="card-q">Explain Go's race detector. How does it work and what are its limitations?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Go's race detector uses <strong>ThreadSanitizer (TSan)</strong> instrumentation. It tracks every memory access and synchronization event, using a happens-before algorithm to detect when two goroutines access the same memory without proper synchronization.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt"># Enable race detector</span>
+go test -race ./...
+go run -race main.go
+go build -race -o myapp</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — race condition example</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// ❌ DATA RACE: concurrent map write</span>
+counter := <span class="num">0</span>
+<span class="kw">var</span> wg sync.<span class="typ">WaitGroup</span>
+<span class="kw">for</span> i := <span class="num">0</span>; i &lt; <span class="num">1000</span>; i++ {
+    wg.<span class="fn">Add</span>(<span class="num">1</span>)
+    <span class="kw">go func</span>() {
+        <span class="kw">defer</span> wg.<span class="fn">Done</span>()
+        counter++ <span class="cmt">// RACE: read-modify-write not atomic</span>
+    }()
+}
+
+<span class="cmt">// ✅ Fix with atomic</span>
+<span class="kw">var</span> counter atomic.<span class="typ">Int64</span>
+counter.<span class="fn">Add</span>(<span class="num">1</span>)</code></pre>
+          </div>
+          <p><strong>Limitations:</strong></p>
+          <ul>
+            <li>5-15x slowdown, 5-10x more memory — not suitable for production builds</li>
+            <li>Only detects races that actually occur at runtime — not all possible races</li>
+            <li>Requires sufficient test coverage to trigger the race paths</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- ── SECTION 2: MEMORY ── -->
+    <section class="section" id="memory">
+      <div class="section-header">
+        <div class="section-icon">🧠</div>
+        <div class="section-title-wrap">
+          <h2>Tricky Golang Memory</h2>
+          <p>Map, Slice, GC, Pointer behavior and common pitfalls</p>
+        </div>
+      </div>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">01</span>
+          <span class="card-q">What causes a slice to unexpectedly share memory with its parent? How do you prevent it?</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// Slices share underlying array until one grows past capacity</span>
+original := []<span class="typ">int</span>{<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>}
+sub := original[<span class="num">1</span>:<span class="num">3</span>]      <span class="cmt">// len=2, cap=4 (shares array!)</span>
+
+sub[<span class="num">0</span>] = <span class="num">99</span>               <span class="cmt">// ❌ modifies original[1]!</span>
+fmt.<span class="fn">Println</span>(original)    <span class="cmt">// [1 99 3 4 5]</span>
+
+<span class="cmt">// Full slice expression limits capacity</span>
+sub2 := original[<span class="num">1</span>:<span class="num">3</span>:<span class="num">3</span>]   <span class="cmt">// cap=2, append will allocate new array</span>
+
+<span class="cmt">// ✅ Explicit copy to break sharing</span>
+safe := <span class="fn">make</span>([]<span class="typ">int</span>, <span class="fn">len</span>(sub))
+<span class="fn">copy</span>(safe, sub)
+
+<span class="cmt">// ❌ Subtle bug: large slice held in memory via small sub-slice</span>
+<span class="kw">func</span> <span class="fn">firstLine</span>(data []<span class="typ">byte</span>) []<span class="typ">byte</span> {
+    <span class="kw">for</span> i, b := <span class="kw">range</span> data {
+        <span class="kw">if</span> b == <span class="str">'\n'</span> {
+            <span class="kw">return</span> data[:<span class="num">i</span>] <span class="cmt">// holds ref to entire data!</span>
+        }
+    }
+    <span class="kw">return</span> data
+}
+
+<span class="cmt">// ✅ Fix: return a copy</span>
+<span class="kw">func</span> <span class="fn">firstLineSafe</span>(data []<span class="typ">byte</span>) []<span class="typ">byte</span> {
+    <span class="kw">for</span> i, b := <span class="kw">range</span> data {
+        <span class="kw">if</span> b == <span class="str">'\n'</span> {
+            result := <span class="fn">make</span>([]<span class="typ">byte</span>, i)
+            <span class="fn">copy</span>(result, data[:<span class="num">i</span>])
+            <span class="kw">return</span> result
+        }
+    }
+    <span class="kw">return</span> <span class="fn">append</span>([]<span class="typ">byte</span>{}, data...)
+}</code></pre>
+          </div>
+          <div class="warn"><strong>⚠ Memory leak pattern:</strong> Reading a 10MB file, extracting a 10-byte header as a sub-slice, then discarding the original variable — the 10MB array still lives on the heap.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">02</span>
+          <span class="card-q">Why is map iteration order randomized in Go? What are the implications?</span>
+          <span class="tags"><span class="tag tag-easy">Easy</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Go deliberately randomizes map iteration order starting from Go 1. The runtime applies a random starting bucket offset each time <code>range</code> is called over a map. This prevents developers from relying on undefined implementation behavior.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code>m := <span class="kw">map</span>[<span class="typ">string</span>]<span class="typ">int</span>{<span class="str">"a"</span>: <span class="num">1</span>, <span class="str">"b"</span>: <span class="num">2</span>, <span class="str">"c"</span>: <span class="num">3</span>}
+
+<span class="cmt">// ❌ Non-deterministic — different order each run</span>
+<span class="kw">for</span> k, v := <span class="kw">range</span> m {
+    fmt.<span class="fn">Println</span>(k, v)
+}
+
+<span class="cmt">// ✅ Sorted iteration</span>
+keys := <span class="fn">make</span>([]<span class="typ">string</span>, <span class="num">0</span>, <span class="fn">len</span>(m))
+<span class="kw">for</span> k := <span class="kw">range</span> m { keys = <span class="fn">append</span>(keys, k) }
+sort.<span class="fn">Strings</span>(keys)
+<span class="kw">for</span> _, k := <span class="kw">range</span> keys {
+    fmt.<span class="fn">Println</span>(k, m[k])
+}
+
+<span class="cmt">// ❌ Common bug: map in JSON marshaling assumes key order</span>
+<span class="cmt">// Use encoding/json — it sorts map keys alphabetically ✅</span></code></pre>
+          </div>
+          <div class="tip"><strong>💡 Practical implication:</strong> Never write tests that depend on map ordering. Use <code>encoding/json</code> for deterministic serialization — it does sort keys alphabetically.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">03</span>
+          <span class="card-q">Explain Go's garbage collector — tricolor mark-and-sweep, write barriers, and GOGC tuning.</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Go uses a <strong>concurrent, tricolor mark-and-sweep GC</strong> with very short stop-the-world (STW) pauses (typically sub-millisecond). Garbage collection runs concurrently with the program.</p>
+          <ul>
+            <li><strong>White:</strong> Not yet visited (potentially garbage)</li>
+            <li><strong>Gray:</strong> Visited but children not yet scanned</li>
+            <li><strong>Black:</strong> Visited, all children scanned (keep)</li>
+          </ul>
+          <p><strong>Write barrier:</strong> Ensures no black object points directly to white — maintains the invariant during concurrent marking. Adds slight overhead to pointer writes.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt"># GOGC=100 (default): GC when heap doubles</span>
+GOGC=100 ./app
+
+<span class="cmt"># Higher GOGC = less frequent GC, higher memory usage</span>
+GOGC=200 ./app
+
+<span class="cmt"># GOMEMLIMIT (Go 1.19+): hard memory ceiling</span>
+GOMEMLIMIT=256MiB ./app
+
+<span class="cmt"># Disable GC (for benchmarks only!)</span>
+GOGC=off ./benchmark</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// Force GC (rarely needed)</span>
+runtime.<span class="fn">GC</span>()
+
+<span class="cmt">// Read GC stats</span>
+<span class="kw">var</span> stats runtime.<span class="typ">MemStats</span>
+runtime.<span class="fn">ReadMemStats</span>(&amp;stats)
+fmt.<span class="fn">Printf</span>(<span class="str">"HeapAlloc: %d MiB\n"</span>, stats.HeapAlloc/<span class="num">1024</span>/<span class="num">1024</span>)
+fmt.<span class="fn">Printf</span>(<span class="str">"NumGC: %d\n"</span>, stats.NumGC)</code></pre>
+          </div>
+          <div class="tip"><strong>💡 Go 1.19+:</strong> Use <code>GOMEMLIMIT</code> instead of relying solely on GOGC. It prevents OOM by triggering GC more aggressively when approaching the limit.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">04</span>
+          <span class="card-q">What causes heap escape in Go? How do you analyze and minimize it?</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Escape analysis determines whether a variable can be allocated on the stack (fast, no GC) or must escape to the heap (GC-managed). Stack allocation is ~10-100x faster.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt"># View escape analysis decisions</span>
+go build -gcflags="-m -m" ./...</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// ❌ Escapes to heap: pointer returned from function</span>
+<span class="kw">func</span> <span class="fn">newUser</span>() *<span class="typ">User</span> {
+    u := <span class="typ">User</span>{Name: <span class="str">"Alice"</span>} <span class="cmt">// escapes!</span>
+    <span class="kw">return</span> &amp;u
+}
+
+<span class="cmt">// ❌ Escapes: stored in interface (boxing)</span>
+<span class="kw">var</span> i <span class="kw">interface</span>{} = <span class="num">42</span> <span class="cmt">// int escapes to heap</span>
+
+<span class="cmt">// ❌ Escapes: slice grows beyond initial capacity</span>
+s := <span class="fn">make</span>([]<span class="typ">int</span>, <span class="num">0</span>)
+<span class="kw">for</span> i := <span class="num">0</span>; i &lt; <span class="num">1000</span>; i++ {
+    s = <span class="fn">append</span>(s, i) <span class="cmt">// multiple allocations</span>
+}
+<span class="cmt">// ✅ Pre-allocate</span>
+s = <span class="fn">make</span>([]<span class="typ">int</span>, <span class="num">0</span>, <span class="num">1000</span>)
+
+<span class="cmt">// ❌ Escapes: fmt.Sprintf causes allocation</span>
+msg := fmt.<span class="fn">Sprintf</span>(<span class="str">"hello %s"</span>, name) <span class="cmt">// allocates</span>
+<span class="cmt">// ✅ Use strings.Builder for hot paths</span>
+<span class="kw">var</span> b strings.<span class="typ">Builder</span>
+b.<span class="fn">WriteString</span>(<span class="str">"hello "</span>)
+b.<span class="fn">WriteString</span>(name)</code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">05</span>
+          <span class="card-q">Explain the nil map vs empty map distinction and nil pointer dereference patterns in Go.</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="kw">var</span> nilMap <span class="kw">map</span>[<span class="typ">string</span>]<span class="typ">int</span>      <span class="cmt">// nil map</span>
+emptyMap := <span class="kw">map</span>[<span class="typ">string</span>]<span class="typ">int</span>{} <span class="cmt">// empty map (initialized)</span>
+
+<span class="cmt">// Reading nil map is safe — returns zero value</span>
+v := nilMap[<span class="str">"key"</span>] <span class="cmt">// v = 0, no panic</span>
+_, ok := nilMap[<span class="str">"key"</span>] <span class="cmt">// ok = false, no panic</span>
+
+<span class="cmt">// ❌ Writing to nil map PANICS</span>
+nilMap[<span class="str">"key"</span>] = <span class="num">1</span> <span class="cmt">// panic: assignment to entry in nil map</span>
+
+<span class="cmt">// Tricky: nil interface != nil pointer</span>
+<span class="kw">type</span> <span class="typ">MyError</span> <span class="kw">struct</span>{}
+<span class="kw">func</span> (e *<span class="typ">MyError</span>) <span class="fn">Error</span>() <span class="typ">string</span> { <span class="kw">return</span> <span class="str">"err"</span> }
+
+<span class="kw">func</span> <span class="fn">getError</span>() <span class="typ">error</span> {
+    <span class="kw">var</span> err *<span class="typ">MyError</span> = <span class="kw">nil</span>
+    <span class="kw">return</span> err <span class="cmt">// ❌ NOT nil! interface wraps (*MyError, nil)</span>
+}
+
+err := <span class="fn">getError</span>()
+fmt.<span class="fn">Println</span>(err == <span class="kw">nil</span>) <span class="cmt">// false! 😱</span>
+
+<span class="cmt">// ✅ Fix: return nil directly</span>
+<span class="kw">func</span> <span class="fn">getErrorFixed</span>() <span class="typ">error</span> {
+    <span class="kw">return nil</span>
+}</code></pre>
+          </div>
+          <div class="warn"><strong>⚠ Classic Go gotcha:</strong> A nil pointer wrapped in an interface is NOT equal to nil. This is the source of many subtle bugs in error handling.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">06</span>
+          <span class="card-q">What is sync.Pool and when should you use it? What are its limitations?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p><code>sync.Pool</code> is a goroutine-safe cache of reusable objects, reducing GC pressure by recycling allocations. Items may be removed by GC at any time — Pool does NOT guarantee persistence.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="kw">var</span> bufPool = &amp;sync.<span class="typ">Pool</span>{
+    New: <span class="kw">func</span>() <span class="kw">interface</span>{} {
+        <span class="kw">return</span> <span class="fn">make</span>([]<span class="typ">byte</span>, <span class="num">0</span>, <span class="num">4096</span>)
+    },
+}
+
+<span class="kw">func</span> <span class="fn">processRequest</span>(data []<span class="typ">byte</span>) {
+    buf := bufPool.<span class="fn">Get</span>().([]<span class="typ">byte</span>)
+    buf = buf[:<span class="num">0</span>] <span class="cmt">// reset without reallocating</span>
+    <span class="kw">defer</span> bufPool.<span class="fn">Put</span>(buf) <span class="cmt">// return to pool</span>
+    
+    buf = <span class="fn">append</span>(buf, data...)
+    <span class="cmt">// ... use buf ...</span>
+}
+
+<span class="cmt">// Real-world: bytes.Buffer pool (used by standard library)</span>
+<span class="kw">var</span> bp sync.<span class="typ">Pool</span>
+bp.New = <span class="kw">func</span>() <span class="kw">interface</span>{} { <span class="kw">return</span> <span class="kw">new</span>(bytes.<span class="typ">Buffer</span>) }
+
+buf := bp.<span class="fn">Get</span>().(*bytes.<span class="typ">Buffer</span>)
+buf.<span class="fn">Reset</span>()
+<span class="kw">defer</span> bp.<span class="fn">Put</span>(buf)</code></pre>
+          </div>
+          <p><strong>Limitations:</strong></p>
+          <ul>
+            <li>Objects can be GC'd at any point — do not use for state that must persist</li>
+            <li>Adds complexity — only worth it when profiling shows allocation pressure</li>
+            <li>Pool objects are not zeroed automatically — always reset before use</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">07</span>
+          <span class="card-q">Explain unsafe.Pointer, uintptr, and when it's valid to use unsafe in Go.</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt">// unsafe.Pointer: GC-tracked, can convert to any type</span>
+<span class="cmt">// uintptr: arithmetic type, NOT tracked by GC!</span>
+
+<span class="cmt">// ✅ Valid: reading struct field by offset (syscall layer)</span>
+<span class="kw">type</span> <span class="typ">Header</span> <span class="kw">struct</span> { Version <span class="typ">uint32</span>; Length <span class="typ">uint32</span> }
+h := <span class="typ">Header</span>{Version: <span class="num">1</span>, Length: <span class="num">42</span>}
+ptr := unsafe.<span class="fn">Pointer</span>(&amp;h)
+lenPtr := (*<span class="typ">uint32</span>)(unsafe.<span class="fn">Pointer</span>(
+    uintptr(ptr) + unsafe.<span class="fn">Offsetof</span>(h.Length),
+))
+fmt.<span class="fn">Println</span>(*lenPtr) <span class="cmt">// 42</span>
+
+<span class="cmt">// ❌ WRONG: storing uintptr across GC point</span>
+p := uintptr(unsafe.<span class="fn">Pointer</span>(&amp;h))
+runtime.<span class="fn">GC</span>() <span class="cmt">// h could be moved, p is now invalid!</span>
+_ = *(*<span class="typ">uint32</span>)(unsafe.<span class="fn">Pointer</span>(p)) <span class="cmt">// UNSAFE</span>
+
+<span class="cmt">// ✅ Zero-copy string↔[]byte conversion (valid in Go 1.20+)</span>
+s := <span class="str">"hello"</span>
+b := unsafe.<span class="fn">Slice</span>(unsafe.<span class="fn">StringData</span>(s), <span class="fn">len</span>(s))</code></pre>
+          </div>
+          <div class="warn"><strong>⚠ Rule:</strong> Never store a <code>uintptr</code> across a GC-safe point. Go's GC can move objects (compaction in future versions). Always convert back to <code>unsafe.Pointer</code> in the same expression.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">08</span>
+          <span class="card-q">Explain the append function's growth strategy and capacity-related bugs.</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// Go 1.18 growth: double up to 256, then ~1.25x</span>
+s := <span class="fn">make</span>([]<span class="typ">int</span>, <span class="num">0</span>)
+<span class="kw">for</span> i := <span class="num">0</span>; i &lt; <span class="num">10</span>; i++ {
+    s = <span class="fn">append</span>(s, i)
+    fmt.<span class="fn">Printf</span>(<span class="str">"len=%d cap=%d\n"</span>, <span class="fn">len</span>(s), <span class="fn">cap</span>(s))
+}
+<span class="cmt">// cap grows: 1, 2, 4, 8, 16...</span>
+
+<span class="cmt">// ❌ Tricky: multiple appends to same original</span>
+a := <span class="fn">make</span>([]<span class="typ">int</span>, <span class="num">3</span>, <span class="num">5</span>)
+b := <span class="fn">append</span>(a, <span class="num">4</span>)
+c := <span class="fn">append</span>(a, <span class="num">9</span>) <span class="cmt">// OVERWRITES b[3]!</span>
+fmt.<span class="fn">Println</span>(b) <span class="cmt">// [0 0 0 9] not [0 0 0 4]!</span>
+
+<span class="cmt">// ✅ Use 3-index slice to prevent this</span>
+a2 := a[:<span class="fn">len</span>(a):<span class="fn">len</span>(a)] <span class="cmt">// cap == len, append allocates</span>
+b2 := <span class="fn">append</span>(a2, <span class="num">4</span>)
+c2 := <span class="fn">append</span>(a2, <span class="num">9</span>)
+fmt.<span class="fn">Println</span>(b2, c2) <span class="cmt">// [0 0 0 4] [0 0 0 9] — safe</span></code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">09</span>
+          <span class="card-q">What is a finalizer in Go and what are the risks of using runtime.SetFinalizer?</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Finalizers run when the GC is about to collect an object. They're a last resort for releasing OS resources (file handles, CGO memory) when users forget to call <code>Close()</code>.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">type</span> <span class="typ">Resource</span> <span class="kw">struct</span>{ fd <span class="typ">int</span> }
+
+<span class="kw">func</span> <span class="fn">NewResource</span>() *<span class="typ">Resource</span> {
+    r := &amp;<span class="typ">Resource</span>{fd: <span class="fn">openFD</span>()}
+    runtime.<span class="fn">SetFinalizer</span>(r, <span class="kw">func</span>(r *<span class="typ">Resource</span>) {
+        <span class="fn">closeFD</span>(r.fd) <span class="cmt">// called by GC goroutine</span>
+    })
+    <span class="kw">return</span> r
+}</code></pre>
+          </div>
+          <p><strong>Risks and limitations:</strong></p>
+          <ul>
+            <li>Finalizer runs in a dedicated goroutine, not the creating goroutine</li>
+            <li>Object resurrected during finalization (finalizer has a reference to it)</li>
+            <li>No guaranteed order — finalizer for A may run before B even if B points to A</li>
+            <li>If program exits before GC runs, finalizers never run</li>
+            <li>Circular references prevent finalization entirely</li>
+          </ul>
+          <div class="success"><strong>✅ Better approach:</strong> Implement <code>io.Closer</code> and use <code>defer r.Close()</code>. Use <code>runtime/debug.SetFinalizer</code> only as a safety net, not primary resource management.</div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ── SECTION 3: GIT ── -->
+    <section class="section" id="git">
+      <div class="section-header">
+        <div class="section-icon">🔀</div>
+        <div class="section-title-wrap">
+          <h2>Git Deep Dive</h2>
+          <p>Internals, workflows, rebasing, and collaboration patterns</p>
+        </div>
+      </div>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">01</span>
+          <span class="card-q">Explain Git's internal object model: blobs, trees, commits, and refs.</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Git is fundamentally a content-addressable filesystem. Every object is stored by its SHA-1 hash under <code>.git/objects/</code>.</p>
+          <ul>
+            <li><strong>Blob:</strong> raw file contents (no filename)</li>
+            <li><strong>Tree:</strong> directory listing (name + mode + pointer to blob/tree)</li>
+            <li><strong>Commit:</strong> pointer to tree + parent(s) + author + message</li>
+            <li><strong>Tag:</strong> pointer to commit with annotation</li>
+            <li><strong>Refs:</strong> human-readable names pointing to commit SHAs (<code>.git/refs/</code>)</li>
+          </ul>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt"># Inspect objects directly</span>
+git cat-file -t HEAD           <span class="cmt"># "commit"</span>
+git cat-file -p HEAD           <span class="cmt"># commit contents</span>
+git cat-file -p HEAD^{tree}    <span class="cmt"># tree contents</span>
+git rev-parse HEAD             <span class="cmt"># SHA of HEAD</span>
+
+<span class="cmt"># See what a ref points to</span>
+cat .git/HEAD                  <span class="cmt"># ref: refs/heads/main</span>
+cat .git/refs/heads/main       <span class="cmt"># SHA</span></code></pre>
+          </div>
+          <div class="tip"><strong>💡 Key insight:</strong> Because objects are content-addressed, two identical files in different directories share the same blob object. Git never stores the same content twice.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">02</span>
+          <span class="card-q">What is the difference between git merge, git rebase, and git cherry-pick? When to use each?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt"># MERGE: creates a merge commit, preserves history</span>
+git checkout main
+git merge feature/login
+<span class="cmt"># History: A--B--C--M (M has two parents)</span>
+<span class="cmt"># ✅ Use for: integrating long-running branches, public branches</span>
+
+<span class="cmt"># REBASE: replays commits on top of target, linear history</span>
+git checkout feature/login
+git rebase main
+<span class="cmt"># History: A--B--C--B'--C' (new SHAs!)</span>
+<span class="cmt"># ✅ Use for: keeping feature branches up to date, clean PR history</span>
+<span class="cmt"># ❌ Never rebase shared/public branches</span>
+
+<span class="cmt"># Interactive rebase: squash, edit, reorder commits</span>
+git rebase -i HEAD~5
+
+<span class="cmt"># CHERRY-PICK: apply a specific commit to current branch</span>
+git cherry-pick abc1234
+<span class="cmt"># ✅ Use for: hotfixes, backporting to release branches</span>
+
+<span class="cmt"># Cherry-pick range</span>
+git cherry-pick A..B</code></pre>
+          </div>
+          <div class="warn"><strong>⚠ Golden rule:</strong> Never rebase commits that have been pushed to a shared remote branch. You will rewrite history and create divergence for all collaborators.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">03</span>
+          <span class="card-q">Explain git reflog and how to recover from a bad reset or accidental branch deletion.</span>
+          <span class="tags"><span class="tag tag-easy">Easy</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>The reflog records every change to HEAD and branch refs — it's your safety net for all Git mistakes.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt"># View reflog</span>
+git reflog
+
+<span class="cmt"># Scenario 1: Accidental hard reset</span>
+git reset --hard HEAD~5     <span class="cmt"># Oops! Lost 5 commits</span>
+git reflog                  <span class="cmt"># Find SHA before reset</span>
+git reset --hard abc1234    <span class="cmt"># Recover to that point</span>
+
+<span class="cmt"># Scenario 2: Deleted branch recovery</span>
+git branch -D feature       <span class="cmt"># Oops! Branch deleted</span>
+git reflog | grep feature   <span class="cmt"># Find last commit SHA</span>
+git checkout -b feature abc1234  <span class="cmt"># Recreate branch</span>
+
+<span class="cmt"># Scenario 3: Find commits not reachable from any branch</span>
+git fsck --lost-found       <span class="cmt"># finds dangling commits</span>
+
+<span class="cmt"># Reflog expires after 90 days (default)</span>
+git config gc.reflogExpire 180.days.ago</code></pre>
+          </div>
+          <div class="tip"><strong>💡 Tip:</strong> <code>git reflog</code> entries expire. If you need to recover very old commits, use <code>git fsck --lost-found</code> which scans all objects in the object store.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">04</span>
+          <span class="card-q">What are git hooks and how would you use pre-commit hooks for a Go project?</span>
+          <span class="tags"><span class="tag tag-easy">Easy</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash — .git/hooks/pre-commit</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code>#!/bin/bash
+set -e
+
+echo "Running pre-commit checks..."
+
+<span class="cmt"># Format check</span>
+UNFORMATTED=$(gofmt -l .)
+if [ -n "$UNFORMATTED" ]; then
+    echo "❌ Unformatted files: $UNFORMATTED"
+    echo "Run: gofmt -w ."
+    exit 1
+fi
+
+<span class="cmt"># Lint</span>
+golangci-lint run ./...
+
+<span class="cmt"># Tests</span>
+go test -race -short ./...
+
+<span class="cmt"># Vet</span>
+go vet ./...
+
+echo "✅ All checks passed"</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash — using pre-commit framework</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt"># .pre-commit-config.yaml (shareable via repo)</span>
+repos:
+  - repo: https://github.com/dnephin/pre-commit-golang
+    hooks:
+      - id: go-fmt
+      - id: go-vet
+      - id: golangci-lint</code></pre>
+          </div>
+          <div class="tip"><strong>💡 Team tip:</strong> Use <code>lefthook</code> or <code>husky</code>-equivalent tools to share hooks via the repository so all team members automatically get the same checks.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">05</span>
+          <span class="card-q">What is git bisect and how would you use it to find a regression in a Go service?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p><code>git bisect</code> performs binary search through commit history to find the first commit that introduced a bug. Reduces O(n) debugging to O(log n).</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code>git bisect start
+git bisect bad                  <span class="cmt"># current HEAD is broken</span>
+git bisect good v1.2.0          <span class="cmt"># last known good tag</span>
+
+<span class="cmt"># Git checks out middle commit; run your test</span>
+go test ./... -run TestLatency
+git bisect good                 <span class="cmt"># or bad</span>
+
+<span class="cmt"># Automate with a script</span>
+git bisect run bash -c '
+    go build ./... 2>/dev/null &&
+    go test ./internal/cache -run TestCacheEviction
+'
+<span class="cmt"># Git finds the exact bad commit automatically!</span>
+
+git bisect reset                <span class="cmt"># return to HEAD when done</span></code></pre>
+          </div>
+          <div class="tip"><strong>💡 Pro tip:</strong> For performance regressions, use <code>git bisect run go test -bench=BenchmarkMyFunc -benchtime=2s ./...</code> with a script that compares benchmark output against a threshold.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">06</span>
+          <span class="card-q">Explain the Gitflow vs trunk-based development workflows and their tradeoffs.</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p><strong>Gitflow:</strong> Long-lived branches (main, develop, feature/*, release/*, hotfix/*). Structured release cycle.</p>
+          <p><strong>Trunk-based Development (TBD):</strong> All developers commit to <code>main</code> at least daily. Feature flags control incomplete features. Short-lived feature branches (max 1-2 days).</p>
+          <ul>
+            <li><strong>Gitflow pros:</strong> Clear release management, suitable for versioned products</li>
+            <li><strong>Gitflow cons:</strong> Long-lived branches → merge hell, delayed integration</li>
+            <li><strong>TBD pros:</strong> Continuous integration, fast feedback, no merge debt</li>
+            <li><strong>TBD cons:</strong> Requires robust feature flags, strong test coverage, discipline</li>
+          </ul>
+          <div class="success"><strong>✅ Industry trend:</strong> High-performing engineering teams (Google, Meta, Netflix) use trunk-based development. Gitflow suits teams with quarterly or versioned releases (libraries, mobile apps).</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">07</span>
+          <span class="card-q">How does git stash work internally, and what are stash pop vs stash apply differences?</span>
+          <span class="tags"><span class="tag tag-easy">Easy</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Stash creates two commits: one for the index (staged changes) and one for the working tree. <code>refs/stash</code> points to the working-tree commit, which has the index commit as a parent.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cmt"># Basic stash</span>
+git stash push -m "wip: auth refactor"
+
+<span class="cmt"># stash pop = apply + drop (removes from stash list)</span>
+git stash pop
+
+<span class="cmt"># stash apply = apply but KEEP in stash list (safer)</span>
+git stash apply stash@{2}
+
+<span class="cmt"># Stash including untracked files</span>
+git stash push --include-untracked
+
+<span class="cmt"># Stash only specific files</span>
+git stash push -p  <span class="cmt"># interactive patch mode</span>
+git stash push -- go.mod go.sum
+
+<span class="cmt"># List and inspect stashes</span>
+git stash list
+git stash show -p stash@{0}
+
+<span class="cmt"># Create branch from stash (useful for big stashes)</span>
+git stash branch feature/wip stash@{1}</code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">08</span>
+          <span class="card-q">What is a monorepo strategy for Go services? How do you manage go.mod files?</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Two main strategies for Go monorepos:</p>
+          <p><strong>1. Single go.mod at root:</strong> All services share one module. Simple but tight coupling.</p>
+          <p><strong>2. Multiple go.mod files:</strong> Each service/library has its own module with independent versioning.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt"># Workspace mode (Go 1.18+) — solves local dependency problem</span>
+<span class="cmt"># go.work file at repo root</span>
+go work init
+go work use ./services/auth ./services/payment ./pkg/common
+
+<span class="cmt"># go.work</span>
+go 1.22
+
+use (
+    ./services/auth
+    ./services/payment
+    ./pkg/common
+)
+
+<span class="cmt"># Now changes to pkg/common are immediately seen by both services</span>
+<span class="cmt"># without publishing to module proxy</span>
+
+<span class="cmt"># Selective CI: only test affected modules</span>
+git diff --name-only HEAD~1 | \
+  grep -oE '^[^/]+/[^/]+' | \
+  sort -u | \
+  xargs -I{} go test ./{}/...</code></pre>
+          </div>
+          <div class="tip"><strong>💡 Recommendation:</strong> Use Go workspaces for local development, but each service should have its own <code>go.mod</code> for independent releases. Use tools like <code>mage</code> or <code>bazel</code> for orchestrating cross-module builds.</div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ── SECTION 4: CI/CD ── -->
+    <section class="section" id="cicd">
+      <div class="section-header">
+        <div class="section-icon">🚀</div>
+        <div class="section-title-wrap">
+          <h2>CI/CD Concepts</h2>
+          <p>Pipelines, deployment strategies, and release engineering</p>
+        </div>
+      </div>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">01</span>
+          <span class="card-q">Design a CI pipeline for a Go microservice. What stages would you include?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>yaml — GitHub Actions</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code">name: CI
+
+on: [push, pull_request]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+
+      # Stage 1: Code Quality
+      - name: Format check
+        run: test -z "$(gofmt -l .)"
+      - name: Vet
+        run: go vet ./...
+      - name: Lint
+        run: golangci-lint run --timeout=5m
+
+      # Stage 2: Security
+      - name: Vulnerability scan
+        run: govulncheck ./...
+      - name: SAST
+        uses: securego/gosec@master
+
+      # Stage 3: Tests
+      - name: Unit tests
+        run: go test -race -coverprofile=coverage.out ./...
+      - name: Coverage gate
+        run: |
+          COVERAGE=$(go tool cover -func=coverage.out | tail -1 | awk '{print $3}')
+          echo "Coverage: $COVERAGE"
+          # Fail if below 80%
+
+      # Stage 4: Build
+      - name: Build
+        run: CGO_ENABLED=0 GOOS=linux go build -trimpath -o bin/app ./cmd/app
+
+      # Stage 5: Container
+      - name: Build & push image
+        run: docker build -t myapp:${{ github.sha }} .</code></pre>
+          </div>
+          <div class="tip"><strong>💡 Fast feedback:</strong> Run format check and vet first (fastest). Put slow integration tests in a separate job that runs in parallel. Use <code>go test -short</code> in CI to skip slow tests.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">02</span>
+          <span class="card-q">Compare blue-green deployment, canary releases, and rolling updates. When to use each?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p><strong>Blue-Green:</strong> Two identical environments; traffic switched atomically via load balancer. Instant rollback by switching back.</p>
+          <ul>
+            <li>✅ Zero-downtime, instant rollback</li>
+            <li>❌ 2x infrastructure cost, database migrations must be backward-compatible</li>
+            <li>Use for: monoliths, high-stakes releases, compliance-heavy systems</li>
+          </ul>
+          <p><strong>Canary Release:</strong> Route small % of traffic (1-5%) to new version, monitor metrics, gradually increase.</p>
+          <ul>
+            <li>✅ Real traffic validation, limits blast radius</li>
+            <li>❌ Complex routing logic, users may see inconsistent behavior</li>
+            <li>Use for: major features, risky changes, high-traffic services</li>
+          </ul>
+          <p><strong>Rolling Update:</strong> Replace instances one-by-one (Kubernetes default). Old and new versions run simultaneously.</p>
+          <ul>
+            <li>✅ Low resource overhead, built into Kubernetes</li>
+            <li>❌ Slow rollback, mixed versions during deploy</li>
+            <li>Use for: stateless services, backward-compatible APIs</li>
+          </ul>
+          <div class="success"><strong>✅ Best practice:</strong> Use canary + automated metrics gates. If error rate or latency spikes above threshold during canary, auto-rollback before wider rollout.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">03</span>
+          <span class="card-q">What is a Dockerfile best practice for Go services? Multi-stage builds?</span>
+          <span class="tags"><span class="tag tag-easy">Easy</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>dockerfile</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"># Stage 1: Build
+FROM golang:1.22-alpine AS builder
+
+WORKDIR /app
+
+# Cache dependencies separately
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# Build static binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -trimpath \
+    -ldflags="-s -w -X main.version=$(git rev-parse --short HEAD)" \
+    -o /bin/app ./cmd/app
+
+# Stage 2: Runtime (minimal)
+FROM gcr.io/distroless/static:nonroot
+# OR: FROM scratch
+
+COPY --from=builder /bin/app /app
+
+USER nonroot:nonroot
+
+EXPOSE 8080
+ENTRYPOINT ["/app"]</code></pre>
+          </div>
+          <p><strong>Why this works:</strong></p>
+          <ul>
+            <li>Final image is ~5-15MB (vs 800MB+ with full Go toolchain)</li>
+            <li>No shell, no package manager — drastically reduced attack surface</li>
+            <li><code>-trimpath</code> removes local filesystem paths from binary</li>
+            <li><code>-s -w</code> strips debug info (smaller binary)</li>
+            <li>Dependency layer cached separately — rebuild only when go.sum changes</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">04</span>
+          <span class="card-q">What is GitOps and how does Argo CD implement it for Kubernetes deployments?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p><strong>GitOps</strong> is an operational model where Git is the single source of truth for infrastructure and application state. All changes are made via pull requests, and automation ensures the cluster matches the Git state.</p>
+          <p><strong>Argo CD</strong> continuously watches a Git repository, compares it to the live Kubernetes state, and reconciles differences.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>yaml — Argo CD Application</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code">apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-go-service
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/org/k8s-config
+    targetRevision: main
+    path: services/my-go-service
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: production
+  syncPolicy:
+    automated:
+      prune: true      # delete removed resources
+      selfHeal: true   # revert manual changes
+    syncOptions:
+      - CreateNamespace=true</code></pre>
+          </div>
+          <div class="tip"><strong>💡 CI vs CD separation:</strong> CI pipeline builds and pushes the image, then updates the image tag in the GitOps repo (PR or direct commit). Argo CD detects the change and deploys. CI never talks to Kubernetes directly.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">05</span>
+          <span class="card-q">How do you handle database migrations in a CI/CD pipeline without downtime?</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Zero-downtime migrations require backward-compatible changes. Follow the <strong>expand-contract</strong> pattern:</p>
+          <ul>
+            <li><strong>Expand:</strong> Add new column (nullable), new table, new index. Deploy app v1 (ignores new column)</li>
+            <li><strong>Migrate:</strong> Backfill data. Deploy app v2 (reads new column, writes both)</li>
+            <li><strong>Contract:</strong> Deploy app v3 (only uses new column). Remove old column</li>
+          </ul>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — using golang-migrate</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// Run migrations at startup (with distributed lock)</span>
+<span class="kw">func</span> <span class="fn">runMigrations</span>(db *sql.<span class="typ">DB</span>) <span class="typ">error</span> {
+    driver, err := postgres.<span class="fn">WithInstance</span>(db, &amp;postgres.<span class="typ">Config</span>{})
+    <span class="kw">if</span> err != <span class="kw">nil</span> { <span class="kw">return</span> err }
+    
+    m, err := migrate.<span class="fn">NewWithDatabaseInstance</span>(
+        <span class="str">"file://migrations"</span>,
+        <span class="str">"postgres"</span>, driver,
+    )
+    <span class="kw">if</span> err != <span class="kw">nil</span> { <span class="kw">return</span> err }
+    
+    <span class="kw">if</span> err := m.<span class="fn">Up</span>(); err != nil &amp;&amp; err != migrate.ErrNoChange {
+        <span class="kw">return</span> err
+    }
+    <span class="kw">return nil</span>
+}</code></pre>
+          </div>
+          <div class="warn"><strong>⚠ Never do:</strong> DROP COLUMN, RENAME COLUMN, change column type in a single deploy. These are destructive to the currently running version of your app.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">06</span>
+          <span class="card-q">How do you manage secrets in a CI/CD pipeline? Compare approaches.</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p><strong>Approach 1 — CI environment variables:</strong> GitHub/GitLab secrets injected at runtime. Simple but vendor-locked.</p>
+          <p><strong>Approach 2 — Vault (HashiCorp):</strong> Dynamic secrets, short-lived credentials, audit log. Gold standard for production.</p>
+          <p><strong>Approach 3 — Cloud native:</strong> AWS Secrets Manager, GCP Secret Manager, Azure Key Vault. Native IAM integration.</p>
+          <p><strong>Approach 4 — Sealed Secrets (Kubernetes):</strong> Encrypted secrets in Git, decrypted only by the cluster controller.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — reading secrets at runtime</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// Read from environment (12-factor app pattern)</span>
+dbURL := os.<span class="fn">Getenv</span>(<span class="str">"DATABASE_URL"</span>)
+<span class="kw">if</span> dbURL == <span class="str">""</span> {
+    log.<span class="fn">Fatal</span>(<span class="str">"DATABASE_URL not set"</span>)
+}
+
+<span class="cmt">// Or use a secrets manager SDK</span>
+secret, err := secretsClient.<span class="fn">GetSecretValue</span>(ctx,
+    &amp;secretsmanager.<span class="typ">GetSecretValueInput</span>{
+        SecretId: aws.<span class="fn">String</span>(<span class="str">"prod/myapp/db"</span>),
+    },
+)</code></pre>
+          </div>
+          <div class="warn"><strong>⚠ Never:</strong> Commit secrets to Git, log environment variables, bake secrets into Docker images, or pass secrets as Docker build args.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">07</span>
+          <span class="card-q">What is a feature flag system and how would you implement one in Go?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">type</span> <span class="typ">FeatureFlags</span> <span class="kw">struct</span> {
+    flags atomic.<span class="typ">Value</span> <span class="cmt">// stores map[string]bool, reload without lock</span>
+}
+
+<span class="kw">func</span> (f *<span class="typ">FeatureFlags</span>) <span class="fn">IsEnabled</span>(flag <span class="typ">string</span>, userID <span class="typ">string</span>) <span class="typ">bool</span> {
+    flags := f.flags.<span class="fn">Load</span>().(<span class="kw">map</span>[<span class="typ">string</span>]<span class="typ">FlagConfig</span>)
+    cfg, ok := flags[flag]
+    <span class="kw">if</span> !ok { <span class="kw">return false</span> }
+    
+    <span class="kw">switch</span> cfg.Type {
+    <span class="kw">case</span> <span class="str">"boolean"</span>:
+        <span class="kw">return</span> cfg.Enabled
+    <span class="kw">case</span> <span class="str">"percentage"</span>:
+        <span class="cmt">// Deterministic hash-based rollout</span>
+        h := fnv.<span class="fn">New32a</span>()
+        h.<span class="fn">Write</span>([]<span class="typ">byte</span>(flag + userID))
+        <span class="kw">return</span> <span class="typ">float64</span>(h.<span class="fn">Sum32</span>()%<span class="num">100</span>) &lt; cfg.Percentage
+    }
+    <span class="kw">return false</span>
+}
+
+<span class="cmt">// Usage</span>
+<span class="kw">if</span> flags.<span class="fn">IsEnabled</span>(<span class="str">"new-checkout-flow"</span>, userID) {
+    <span class="kw">return</span> handler.<span class="fn">NewCheckout</span>(ctx, req)
+}
+<span class="kw">return</span> handler.<span class="fn">OldCheckout</span>(ctx, req)</code></pre>
+          </div>
+          <div class="tip"><strong>💡 Production tools:</strong> LaunchDarkly, Unleash, Flagsmith, or OpenFeature (vendor-neutral SDK). For simple cases, store flags in Redis or a config file with hot-reload via <code>fsnotify</code>.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">08</span>
+          <span class="card-q">How would you implement semantic versioning and automated changelog generation in a Go project?</span>
+          <span class="tags"><span class="tag tag-easy">Easy</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Use <strong>Conventional Commits</strong> (feat:, fix:, BREAKING CHANGE:) + automated release tooling.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash — using semantic-release or release-please</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt"># Conventional commit messages drive versioning</span>
+git commit -m "feat: add gRPC health check endpoint"   <span class="cmt"># minor bump</span>
+git commit -m "fix: correct nil pointer in auth middleware"  <span class="cmt"># patch bump</span>
+git commit -m "feat!: redesign config format"          <span class="cmt"># major bump</span>
+
+<span class="cmt"># goreleaser: build + release Go binaries + Docker images</span>
+<span class="cmt"># .goreleaser.yaml</span>
+builds:
+  - env: [CGO_ENABLED=0]
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ldflags: -s -w -X main.version={{.Version}}
+
+dockers:
+  - image_templates:
+      - "ghcr.io/org/app:{{.Tag}}"
+      - "ghcr.io/org/app:latest"</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — embed version at build time</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">var</span> (
+    version = <span class="str">"dev"</span>     <span class="cmt">// set by -ldflags</span>
+    commit  = <span class="str">"none"</span>
+    date    = <span class="str">"unknown"</span>
+)
+
+<span class="cmt">// Or use Go 1.18+ debug.ReadBuildInfo()</span>
+info, _ := debug.<span class="fn">ReadBuildInfo</span>()
+fmt.<span class="fn">Println</span>(info.Main.Version)</code></pre>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ── SECTION 5: DISTRIBUTED ── -->
+    <section class="section" id="distributed">
+      <div class="section-header">
+        <div class="section-icon">🌐</div>
+        <div class="section-title-wrap">
+          <h2>Distributed Systems</h2>
+          <p>Consensus, CAP theorem, patterns for resilient microservices</p>
+        </div>
+      </div>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">01</span>
+          <span class="card-q">Explain the CAP theorem and its practical implications for designing Go microservices.</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>CAP theorem states that a distributed system can guarantee at most two of three properties simultaneously during a network partition:</p>
+          <ul>
+            <li><strong>C (Consistency):</strong> Every read returns the most recent write</li>
+            <li><strong>A (Availability):</strong> Every request receives a response</li>
+            <li><strong>P (Partition tolerance):</strong> System works despite network splits</li>
+          </ul>
+          <p>Since partitions are inevitable in distributed systems, the real choice is <strong>CP vs AP</strong>:</p>
+          <ul>
+            <li><strong>CP systems:</strong> Zookeeper, etcd, HBase — sacrifice availability for consistency. Use for: leader election, distributed locks, financial transactions</li>
+            <li><strong>AP systems:</strong> Cassandra, CouchDB, DynamoDB — sacrifice consistency for availability. Use for: user sessions, shopping carts, analytics</li>
+          </ul>
+          <div class="tip"><strong>💡 PACELC extension:</strong> Even without partitions, there's a tradeoff: Latency vs Consistency. A globally-consistent write requires consensus (slow). Eventual consistency enables local writes (fast).</div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — implementing read-your-writes with fencing</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// After write, pass version token to read path</span>
+<span class="kw">type</span> <span class="typ">WriteResult</span> <span class="kw">struct</span> {
+    ID      <span class="typ">string</span>
+    Version <span class="typ">int64</span> <span class="cmt">// logical timestamp / LSN</span>
+}
+
+<span class="kw">func</span> (s *<span class="typ">Service</span>) <span class="fn">ReadAfterWrite</span>(ctx <span class="typ">context.Context</span>, id <span class="typ">string</span>, minVer <span class="typ">int64</span>) (*<span class="typ">User</span>, <span class="typ">error</span>) {
+    <span class="cmt">// Route to replica only if it has caught up</span>
+    <span class="kw">return</span> s.db.<span class="fn">ReadAtMinVersion</span>(ctx, id, minVer)
+}</code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">02</span>
+          <span class="card-q">Implement circuit breaker and retry with exponential backoff in Go.</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// Exponential backoff with jitter</span>
+<span class="kw">func</span> <span class="fn">RetryWithBackoff</span>[T <span class="kw">any</span>](ctx <span class="typ">context.Context</span>, maxAttempts <span class="typ">int</span>, fn <span class="kw">func</span>() (T, <span class="typ">error</span>)) (T, <span class="typ">error</span>) {
+    <span class="kw">var</span> (
+        zero T
+        lastErr <span class="typ">error</span>
+        base    = <span class="num">100</span> * time.<span class="typ">Millisecond</span>
+    )
+    <span class="kw">for</span> attempt := <span class="num">0</span>; attempt &lt; maxAttempts; attempt++ {
+        result, err := <span class="fn">fn</span>()
+        <span class="kw">if</span> err == <span class="kw">nil</span> { <span class="kw">return</span> result, <span class="kw">nil</span> }
+        
+        lastErr = err
+        wait := base * time.<span class="typ">Duration</span>(<span class="num">1</span>&lt;&lt;attempt)     <span class="cmt">// 100ms, 200ms, 400ms…</span>
+        jitter := time.<span class="fn">Duration</span>(rand.<span class="fn">Int63n</span>(<span class="typ">int64</span>(wait / <span class="num">4</span>))) <span class="cmt">// ±25% jitter</span>
+        
+        <span class="kw">select</span> {
+        <span class="kw">case</span> &lt;-ctx.<span class="fn">Done</span>():
+            <span class="kw">return</span> zero, ctx.<span class="fn">Err</span>()
+        <span class="kw">case</span> &lt;-time.<span class="fn">After</span>(wait + jitter):
+        }
+    }
+    <span class="kw">return</span> zero, fmt.<span class="fn">Errorf</span>(<span class="str">"all %d attempts failed: %w"</span>, maxAttempts, lastErr)
+}
+
+<span class="cmt">// Circuit breaker using sony/gobreaker</span>
+cb := gobreaker.<span class="fn">NewCircuitBreaker</span>(gobreaker.<span class="typ">Settings</span>{
+    Name:        <span class="str">"payment-service"</span>,
+    MaxRequests: <span class="num">3</span>,     <span class="cmt">// requests in half-open state</span>
+    Interval:    <span class="num">60</span> * time.<span class="typ">Second</span>,
+    Timeout:     <span class="num">30</span> * time.<span class="typ">Second</span>,
+    ReadyToTrip: <span class="kw">func</span>(counts gobreaker.<span class="typ">Counts</span>) <span class="typ">bool</span> {
+        failureRatio := <span class="typ">float64</span>(counts.TotalFailures) / <span class="typ">float64</span>(counts.Requests)
+        <span class="kw">return</span> counts.Requests >= <span class="num">5</span> &amp;&amp; failureRatio >= <span class="num">0.6</span>
+    },
+})</code></pre>
+          </div>
+          <div class="tip"><strong>💡 Always add jitter:</strong> Without jitter, all instances retry simultaneously after an outage, causing a thundering herd that overwhelms the recovering service.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">03</span>
+          <span class="card-q">How does distributed tracing work? Implement trace context propagation in Go.</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Distributed tracing tracks a request across multiple services using a <strong>trace ID</strong> (unique per request) and <strong>span IDs</strong> (unique per operation). W3C TraceContext is the standard propagation format.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — OpenTelemetry</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// Initialize tracer</span>
+tp, err := tracesdk.<span class="fn">New</span>(
+    tracesdk.<span class="fn">WithBatcher</span>(otlptracehttp.<span class="fn">NewExporter</span>(...)),
+    tracesdk.<span class="fn">WithResource</span>(resource.<span class="fn">NewWithAttributes</span>(
+        semconv.<span class="typ">SchemaURL</span>,
+        semconv.<span class="fn">ServiceName</span>(<span class="str">"order-service"</span>),
+    )),
+)
+otel.<span class="fn">SetTracerProvider</span>(tp)
+
+<span class="cmt">// Start a span in handler</span>
+tracer := otel.<span class="fn">Tracer</span>(<span class="str">"order-service"</span>)
+
+<span class="kw">func</span> (h *<span class="typ">Handler</span>) <span class="fn">CreateOrder</span>(w http.<span class="typ">ResponseWriter</span>, r *http.<span class="typ">Request</span>) {
+    ctx, span := tracer.<span class="fn">Start</span>(r.<span class="fn">Context</span>(), <span class="str">"CreateOrder"</span>)
+    <span class="kw">defer</span> span.<span class="fn">End</span>()
+    
+    span.<span class="fn">SetAttributes</span>(
+        attribute.<span class="fn">String</span>(<span class="str">"user.id"</span>, userID),
+        attribute.<span class="fn">Int</span>(<span class="str">"order.items"</span>, itemCount),
+    )
+    
+    <span class="cmt">// Context propagated to DB calls, downstream RPCs</span>
+    order, err := h.svc.<span class="fn">Create</span>(ctx, req)
+    <span class="kw">if</span> err != <span class="kw">nil</span> {
+        span.<span class="fn">RecordError</span>(err)
+        span.<span class="fn">SetStatus</span>(codes.Error, err.<span class="fn">Error</span>())
+    }
+}</code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">04</span>
+          <span class="card-q">Explain the saga pattern for distributed transactions. Compare choreography vs orchestration.</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>The Saga pattern manages distributed transactions by splitting them into local transactions with compensating actions for rollback.</p>
+          <p><strong>Choreography:</strong> Each service publishes events; others react. No central coordinator.</p>
+          <ul>
+            <li>✅ Loose coupling, no single point of failure</li>
+            <li>❌ Hard to track overall state, cyclic dependencies risk</li>
+          </ul>
+          <p><strong>Orchestration:</strong> A central orchestrator (saga coordinator) tells each service what to do.</p>
+          <ul>
+            <li>✅ Clear workflow visualization, easier debugging</li>
+            <li>❌ Orchestrator is a bottleneck/SPF, tighter coupling</li>
+          </ul>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — orchestration saga</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">func</span> (s *<span class="typ">OrderSaga</span>) <span class="fn">Execute</span>(ctx <span class="typ">context.Context</span>, order <span class="typ">Order</span>) <span class="typ">error</span> {
+    steps := []<span class="typ">SagaStep</span>{
+        {
+            Execute:    <span class="kw">func</span>() <span class="typ">error</span> { <span class="kw">return</span> s.inventory.<span class="fn">Reserve</span>(ctx, order) },
+            Compensate: <span class="kw">func</span>() <span class="typ">error</span> { <span class="kw">return</span> s.inventory.<span class="fn">Release</span>(ctx, order) },
+        },
+        {
+            Execute:    <span class="kw">func</span>() <span class="typ">error</span> { <span class="kw">return</span> s.payment.<span class="fn">Charge</span>(ctx, order) },
+            Compensate: <span class="kw">func</span>() <span class="typ">error</span> { <span class="kw">return</span> s.payment.<span class="fn">Refund</span>(ctx, order) },
+        },
+        {
+            Execute:    <span class="kw">func</span>() <span class="typ">error</span> { <span class="kw">return</span> s.shipping.<span class="fn">Schedule</span>(ctx, order) },
+            Compensate: <span class="kw">func</span>() <span class="typ">error</span> { <span class="kw">return</span> s.shipping.<span class="fn">Cancel</span>(ctx, order) },
+        },
+    }
+    
+    <span class="kw">var</span> completed []<span class="typ">SagaStep</span>
+    <span class="kw">for</span> _, step := <span class="kw">range</span> steps {
+        <span class="kw">if</span> err := step.<span class="fn">Execute</span>(); err != <span class="kw">nil</span> {
+            <span class="cmt">// Compensate in reverse order</span>
+            <span class="kw">for</span> i := <span class="fn">len</span>(completed) - <span class="num">1</span>; i >= <span class="num">0</span>; i-- {
+                completed[i].<span class="fn">Compensate</span>()
+            }
+            <span class="kw">return</span> err
+        }
+        completed = <span class="fn">append</span>(completed, step)
+    }
+    <span class="kw">return nil</span>
+}</code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">05</span>
+          <span class="card-q">What is consistent hashing and when would you use it in a Go distributed system?</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Consistent hashing maps keys to nodes on a virtual ring. When nodes are added/removed, only K/N keys remapped (vs all keys in naive modulo hashing). Virtual nodes improve load distribution.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">type</span> <span class="typ">HashRing</span> <span class="kw">struct</span> {
+    replicas <span class="typ">int</span>
+    ring     <span class="kw">map</span>[<span class="typ">uint32</span>]<span class="typ">string</span>
+    sorted   []<span class="typ">uint32</span>
+}
+
+<span class="kw">func</span> (h *<span class="typ">HashRing</span>) <span class="fn">Add</span>(node <span class="typ">string</span>) {
+    <span class="kw">for</span> i := <span class="num">0</span>; i &lt; h.replicas; i++ {
+        key := h.<span class="fn">hash</span>(fmt.<span class="fn">Sprintf</span>(<span class="str">"%s:%d"</span>, node, i))
+        h.ring[key] = node
+        h.sorted = <span class="fn">append</span>(h.sorted, key)
+    }
+    sort.<span class="fn">Slice</span>(h.sorted, <span class="kw">func</span>(i, j <span class="typ">int</span>) <span class="typ">bool</span> { <span class="kw">return</span> h.sorted[i] &lt; h.sorted[j] })
+}
+
+<span class="kw">func</span> (h *<span class="typ">HashRing</span>) <span class="fn">Get</span>(key <span class="typ">string</span>) <span class="typ">string</span> {
+    hash := h.<span class="fn">hash</span>(key)
+    idx := sort.<span class="fn">Search</span>(<span class="fn">len</span>(h.sorted), <span class="kw">func</span>(i <span class="typ">int</span>) <span class="typ">bool</span> {
+        <span class="kw">return</span> h.sorted[i] >= hash
+    })
+    <span class="kw">if</span> idx == <span class="fn">len</span>(h.sorted) { idx = <span class="num">0</span> } <span class="cmt">// wrap around</span>
+    <span class="kw">return</span> h.ring[h.sorted[idx]]
+}</code></pre>
+          </div>
+          <p><strong>Use cases:</strong> Cache sharding (Redis Cluster), load balancer session affinity, distributed key-value stores, partitioning in message queues.</p>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">06</span>
+          <span class="card-q">How do you implement idempotent APIs? What are the patterns for at-least-once delivery?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// Pattern 1: Idempotency key in header</span>
+<span class="kw">func</span> (h *<span class="typ">PaymentHandler</span>) <span class="fn">Charge</span>(w http.<span class="typ">ResponseWriter</span>, r *http.<span class="typ">Request</span>) {
+    idempKey := r.Header.<span class="fn">Get</span>(<span class="str">"Idempotency-Key"</span>)
+    <span class="kw">if</span> idempKey == <span class="str">""</span> {
+        http.<span class="fn">Error</span>(w, <span class="str">"Idempotency-Key required"</span>, <span class="num">400</span>)
+        <span class="kw">return</span>
+    }
+    
+    <span class="cmt">// Check if we've seen this key (Redis with TTL)</span>
+    cached, err := h.cache.<span class="fn">Get</span>(ctx, <span class="str">"idem:"</span>+idempKey)
+    <span class="kw">if</span> err == <span class="kw">nil</span> {
+        w.<span class="fn">Write</span>(cached) <span class="cmt">// return cached response</span>
+        <span class="kw">return</span>
+    }
+    
+    result := h.<span class="fn">processPayment</span>(r)
+    h.cache.<span class="fn">Set</span>(ctx, <span class="str">"idem:"</span>+idempKey, result, <span class="num">24</span>*time.<span class="typ">Hour</span>)
+    w.<span class="fn">Write</span>(result)
+}
+
+<span class="cmt">// Pattern 2: Message deduplication with DB unique constraint</span>
+<span class="cmt">// INSERT INTO processed_events (event_id, ...) ON CONFLICT DO NOTHING</span>
+
+<span class="cmt">// Pattern 3: Optimistic locking with version</span>
+<span class="cmt">// UPDATE accounts SET balance = $1, version = version+1</span>
+<span class="cmt">// WHERE id = $2 AND version = $3</span></code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">07</span>
+          <span class="card-q">What is backpressure and how do you implement it in a Go service?</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Backpressure signals upstream producers to slow down when a downstream consumer is overwhelmed, preventing cascading failures.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// Pattern 1: Bounded channel as work queue</span>
+workQueue := <span class="fn">make</span>(<span class="kw">chan</span> <span class="typ">Request</span>, <span class="num">1000</span>) <span class="cmt">// capacity = backpressure signal</span>
+
+<span class="kw">func</span> <span class="fn">handleRequest</span>(req <span class="typ">Request</span>) <span class="typ">error</span> {
+    <span class="kw">select</span> {
+    <span class="kw">case</span> workQueue &lt;- req:
+        <span class="kw">return nil</span>
+    <span class="kw">default</span>:
+        <span class="cmt">// Queue full — reject with 429 Too Many Requests</span>
+        <span class="kw">return</span> ErrOverloaded
+    }
+}
+
+<span class="cmt">// Pattern 2: Token bucket rate limiter (golang.org/x/time/rate)</span>
+limiter := rate.<span class="fn">NewLimiter</span>(<span class="num">1000</span>, <span class="num">100</span>) <span class="cmt">// 1000 req/s, burst 100</span>
+
+<span class="kw">func</span> <span class="fn">middleware</span>(next http.<span class="typ">Handler</span>) http.<span class="typ">Handler</span> {
+    <span class="kw">return</span> http.<span class="fn">HandlerFunc</span>(<span class="kw">func</span>(w http.<span class="typ">ResponseWriter</span>, r *http.<span class="typ">Request</span>) {
+        <span class="kw">if</span> !limiter.<span class="fn">Allow</span>() {
+            http.<span class="fn">Error</span>(w, <span class="str">"Rate limit exceeded"</span>, http.StatusTooManyRequests)
+            <span class="kw">return</span>
+        }
+        next.<span class="fn">ServeHTTP</span>(w, r)
+    })
+}
+
+<span class="cmt">// Pattern 3: Semaphore for bounded parallelism</span>
+sem := <span class="fn">make</span>(<span class="kw">chan</span> <span class="kw">struct</span>{}, <span class="num">10</span>) <span class="cmt">// max 10 concurrent</span>
+sem &lt;- <span class="kw">struct</span>{}{}             <span class="cmt">// acquire</span>
+<span class="kw">defer func</span>() { &lt;-sem }()    <span class="cmt">// release</span></code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">08</span>
+          <span class="card-q">What are the tradeoffs between gRPC and REST for Go microservices?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <ul>
+            <li><strong>gRPC:</strong> Binary protobuf serialization (3-10x smaller), HTTP/2 multiplexing, bidirectional streaming, strong contract (proto), code generation. Harder to debug/test manually.</li>
+            <li><strong>REST/JSON:</strong> Human-readable, widely supported, no codegen needed, browser-native, excellent tooling (curl, Postman). Larger payload, no native streaming.</li>
+          </ul>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — gRPC server with interceptors</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">func</span> <span class="fn">main</span>() {
+    srv := grpc.<span class="fn">NewServer</span>(
+        grpc.<span class="fn">ChainUnaryInterceptor</span>(
+            otelgrpc.<span class="fn">UnaryServerInterceptor</span>(),  <span class="cmt">// tracing</span>
+            grpcrecovery.<span class="fn">UnaryServerInterceptor</span>(),<span class="cmt">// panic recovery</span>
+            grpcauth.<span class="fn">UnaryServerInterceptor</span>(authFn), <span class="cmt">// auth</span>
+            grpcratelimit.<span class="fn">UnaryServerInterceptor</span>(limiter),
+        ),
+        grpc.<span class="fn">MaxRecvMsgSize</span>(<span class="num">10</span> * <span class="num">1024</span> * <span class="num">1024</span>),
+    )
+    pb.<span class="fn">RegisterOrderServiceServer</span>(srv, &amp;<span class="typ">OrderServer</span>{})
+}</code></pre>
+          </div>
+          <div class="success"><strong>✅ Hybrid approach:</strong> gRPC for internal service-to-service communication (performance). REST/JSON for public APIs (accessibility). Use grpc-gateway to expose gRPC services as REST automatically.</div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ── SECTION 6: MONITORING ── -->
+    <section class="section" id="monitoring">
+      <div class="section-header">
+        <div class="section-icon">📊</div>
+        <div class="section-title-wrap">
+          <h2>Monitoring & Observability</h2>
+          <p>Metrics, tracing, logging — the three pillars</p>
+        </div>
+      </div>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">01</span>
+          <span class="card-q">Explain the three pillars of observability and how they differ from monitoring.</span>
+          <span class="tags"><span class="tag tag-easy">Easy</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p><strong>Monitoring:</strong> Tracking known failure modes with dashboards and alerts. Tells you <em>what</em> is broken.</p>
+          <p><strong>Observability:</strong> Ability to understand internal system state from external outputs. Lets you answer questions you didn't know to ask. Tells you <em>why</em> it's broken.</p>
+          <ul>
+            <li><strong>Metrics</strong> — Aggregated numerical data over time. Low cardinality. Cheap to store. Examples: request rate, error rate, latency percentiles (RED/USE method).</li>
+            <li><strong>Traces</strong> — Distributed request journey across services. High value for latency debugging. Examples: OpenTelemetry, Jaeger, Zipkin.</li>
+            <li><strong>Logs</strong> — Discrete events with context. High cardinality. Expensive at scale. Examples: structured JSON logs, ELK stack, Loki.</li>
+          </ul>
+          <div class="tip"><strong>💡 OpenTelemetry:</strong> Vendor-neutral framework for all three pillars. Write once, export to Datadog, Grafana, Jaeger, etc. This is the industry standard going forward.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">02</span>
+          <span class="card-q">How do you implement structured logging in Go? Compare slog, zerolog, and zap.</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — slog (stdlib, Go 1.21+)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">import</span> <span class="str">"log/slog"</span>
+
+logger := slog.<span class="fn">New</span>(slog.<span class="fn">NewJSONHandler</span>(os.Stdout, &amp;slog.<span class="typ">HandlerOptions</span>{
+    Level: slog.<span class="typ">LevelInfo</span>,
+    AddSource: <span class="kw">true</span>,
+}))
+
+<span class="cmt">// Structured fields</span>
+logger.<span class="fn">Info</span>(<span class="str">"request completed"</span>,
+    slog.<span class="fn">String</span>(<span class="str">"method"</span>, r.Method),
+    slog.<span class="fn">Int</span>(<span class="str">"status"</span>, <span class="num">200</span>),
+    slog.<span class="fn">Duration</span>(<span class="str">"latency"</span>, elapsed),
+    slog.<span class="fn">String</span>(<span class="str">"trace_id"</span>, traceID),
+)
+
+<span class="cmt">// With context — propagate logger through call stack</span>
+ctx := context.<span class="fn">WithValue</span>(ctx, loggerKey, logger)
+logger.<span class="fn">InfoContext</span>(ctx, <span class="str">"db query"</span>, slog.<span class="fn">String</span>(<span class="str">"query"</span>, q))</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — zerolog (fastest)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">import</span> <span class="str">"github.com/rs/zerolog/log"</span>
+
+log.Info().
+    Str(<span class="str">"service"</span>, <span class="str">"auth"</span>).
+    Int(<span class="str">"user_id"</span>, userID).
+    Dur(<span class="str">"latency"</span>, elapsed).
+    Msg(<span class="str">"login successful"</span>)
+<span class="cmt">// Output: {"level":"info","service":"auth","user_id":42,...}</span></code></pre>
+          </div>
+          <p><strong>Comparison:</strong> zerolog is fastest (zero allocation in hot path), zap is flexible with sugared API, slog is stdlib (Go 1.21+) and good for most cases. All output structured JSON.</p>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">03</span>
+          <span class="card-q">How do you expose Prometheus metrics in a Go service? What are the four metric types?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">var</span> (
+    <span class="cmt">// Counter — only goes up (requests, errors)</span>
+    httpRequests = promauto.<span class="fn">NewCounterVec</span>(prometheus.<span class="typ">CounterOpts</span>{
+        Name: <span class="str">"http_requests_total"</span>,
+        Help: <span class="str">"Total HTTP requests"</span>,
+    }, []<span class="typ">string</span>{<span class="str">"method"</span>, <span class="str">"path"</span>, <span class="str">"status"</span>})
+
+    <span class="cmt">// Gauge — can go up and down (goroutines, connections)</span>
+    activeConns = promauto.<span class="fn">NewGauge</span>(prometheus.<span class="typ">GaugeOpts</span>{
+        Name: <span class="str">"active_connections"</span>,
+    })
+
+    <span class="cmt">// Histogram — latency distribution with buckets</span>
+    reqDuration = promauto.<span class="fn">NewHistogramVec</span>(prometheus.<span class="typ">HistogramOpts</span>{
+        Name:    <span class="str">"request_duration_seconds"</span>,
+        Buckets: []<span class="typ">float64</span>{.001, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5},
+    }, []<span class="typ">string</span>{<span class="str">"endpoint"</span>})
+
+    <span class="cmt">// Summary — quantiles (p50, p95, p99)</span>
+    reqSize = promauto.<span class="fn">NewSummary</span>(prometheus.<span class="typ">SummaryOpts</span>{
+        Name:       <span class="str">"request_size_bytes"</span>,
+        Objectives: <span class="kw">map</span>[<span class="typ">float64</span>]<span class="typ">float64</span>{<span class="num">0.5</span>: <span class="num">0.05</span>, <span class="num">0.9</span>: <span class="num">0.01</span>, <span class="num">0.99</span>: <span class="num">0.001</span>},
+    })
+)
+
+<span class="cmt">// Middleware to record metrics</span>
+<span class="kw">func</span> <span class="fn">metricsMiddleware</span>(next http.<span class="typ">Handler</span>) http.<span class="typ">Handler</span> {
+    <span class="kw">return</span> http.<span class="fn">HandlerFunc</span>(<span class="kw">func</span>(w http.<span class="typ">ResponseWriter</span>, r *http.<span class="typ">Request</span>) {
+        start := time.<span class="fn">Now</span>()
+        rw := &amp;<span class="typ">statusRecorder</span>{ResponseWriter: w}
+        next.<span class="fn">ServeHTTP</span>(rw, r)
+        
+        dur := time.<span class="fn">Since</span>(start)
+        status := strconv.<span class="fn">Itoa</span>(rw.status)
+        
+        httpRequests.<span class="fn">WithLabelValues</span>(r.Method, r.URL.Path, status).<span class="fn">Inc</span>()
+        reqDuration.<span class="fn">WithLabelValues</span>(r.URL.Path).<span class="fn">Observe</span>(dur.<span class="fn">Seconds</span>())
+    })
+}</code></pre>
+          </div>
+          <div class="tip"><strong>💡 Use Histogram over Summary</strong> for latency when possible — Histograms can be aggregated across instances (PromQL <code>histogram_quantile</code>). Summaries calculate quantiles client-side and can't be aggregated.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">04</span>
+          <span class="card-q">What are SLIs, SLOs, and SLAs? How do you use error budgets?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <ul>
+            <li><strong>SLI (Service Level Indicator):</strong> Measured quantity: "99.2% of requests completed in under 200ms this week"</li>
+            <li><strong>SLO (Service Level Objective):</strong> Target for an SLI: "99.9% of requests under 200ms per 30-day window"</li>
+            <li><strong>SLA (Service Level Agreement):</strong> Business contract with penalties if SLO is breached</li>
+          </ul>
+          <p><strong>Error budget</strong> = 1 - SLO. For 99.9% SLO = 0.1% error budget = ~43.2 min/month downtime allowed.</p>
+          <p>If error budget is exhausted:</p>
+          <ul>
+            <li>Freeze new feature deployments</li>
+            <li>Dedicate all engineering to reliability work</li>
+            <li>Postmortem and root cause analysis required</li>
+          </ul>
+          <div class="code-wrap">
+            <div class="code-lang"><span>promql — SLO burn rate alert</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt"># Fast burn: consuming error budget 14x faster than allowed</span>
+(
+  sum(rate(http_requests_total{status=~"5.."}[1h])) /
+  sum(rate(http_requests_total[1h]))
+) > 14 * (1 - 0.999)</code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">05</span>
+          <span class="card-q">How would you debug a memory leak in a production Go service using pprof?</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go — enable pprof endpoint</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">import</span> _ <span class="str">"net/http/pprof"</span> <span class="cmt">// registers /debug/pprof handlers</span>
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="kw">go func</span>() {
+        log.<span class="fn">Println</span>(http.<span class="fn">ListenAndServe</span>(<span class="str">"localhost:6060"</span>, <span class="kw">nil</span>))
+    }()
+    <span class="cmt">// ... rest of app</span>
+}</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash — profiling workflow</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt"># Heap profile — current allocations</span>
+go tool pprof http://localhost:6060/debug/pprof/heap
+
+<span class="cmt"># Goroutine profile — see all goroutines</span>
+go tool pprof http://localhost:6060/debug/pprof/goroutine
+
+<span class="cmt"># CPU profile — 30 second sample</span>
+go tool pprof http://localhost:6060/debug/pprof/profile?seconds=30
+
+<span class="cmt"># Inside pprof interactive mode</span>
+(pprof) top10          <span class="cmt"># top 10 memory consumers</span>
+(pprof) list myFunc    <span class="cmt"># annotate source code with allocs</span>
+(pprof) web            <span class="cmt"># open flamegraph in browser</span>
+
+<span class="cmt"># Compare two heap profiles to find the leak</span>
+go tool pprof -base heap1.pb.gz heap2.pb.gz</code></pre>
+          </div>
+          <div class="success"><strong>✅ Systematic approach:</strong> Take heap snapshot every 5 minutes. Compare consecutive snapshots — the growing allocations point to the leak. Check goroutine profile for goroutine leaks that hold references.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">06</span>
+          <span class="card-q">What is the USE method vs RED method for monitoring? When to apply each?</span>
+          <span class="tags"><span class="tag tag-easy">Easy</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p><strong>USE Method</strong> (Brendan Gregg) — For <em>infrastructure resources</em> (CPU, memory, disk, network):</p>
+          <ul>
+            <li><strong>U</strong>tilization — % time resource is busy</li>
+            <li><strong>S</strong>aturation — work queued but not yet serviced</li>
+            <li><strong>E</strong>rrors — error count/rate</li>
+          </ul>
+          <p><strong>RED Method</strong> (Tom Wilkie) — For <em>microservices</em>:</p>
+          <ul>
+            <li><strong>R</strong>ate — requests per second</li>
+            <li><strong>E</strong>rrors — failed requests per second</li>
+            <li><strong>D</strong>uration — latency distribution (p50, p95, p99)</li>
+          </ul>
+          <div class="tip"><strong>💡 In practice:</strong> Use RED for alerting (user-visible impact), USE for diagnosis (find why RED metrics are bad). A high error rate (RED) might be explained by disk saturation (USE).</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">07</span>
+          <span class="card-q">How would you implement health checks (liveness, readiness, startup) for a Go service on Kubernetes?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">var</span> ready atomic.<span class="typ">Bool</span>
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    r := chi.<span class="fn">NewRouter</span>()
+    
+    <span class="cmt">// Liveness: is the process alive? (restart if fails)</span>
+    r.<span class="fn">Get</span>(<span class="str">"/health/live"</span>, <span class="kw">func</span>(w http.<span class="typ">ResponseWriter</span>, r *http.<span class="typ">Request</span>) {
+        w.<span class="fn">WriteHeader</span>(http.StatusOK) <span class="cmt">// 200 if process is running</span>
+    })
+    
+    <span class="cmt">// Readiness: can I serve traffic? (stop routing if fails)</span>
+    r.<span class="fn">Get</span>(<span class="str">"/health/ready"</span>, <span class="kw">func</span>(w http.<span class="typ">ResponseWriter</span>, r *http.<span class="typ">Request</span>) {
+        <span class="kw">if</span> !ready.<span class="fn">Load</span>() {
+            http.<span class="fn">Error</span>(w, <span class="str">"not ready"</span>, http.StatusServiceUnavailable)
+            <span class="kw">return</span>
+        }
+        <span class="cmt">// Check DB connection</span>
+        <span class="kw">if</span> err := db.<span class="fn">PingContext</span>(r.<span class="fn">Context</span>()); err != <span class="kw">nil</span> {
+            http.<span class="fn">Error</span>(w, <span class="str">"db unhealthy"</span>, <span class="num">503</span>)
+            <span class="kw">return</span>
+        }
+        w.<span class="fn">WriteHeader</span>(http.StatusOK)
+    })
+    
+    <span class="cmt">// Mark ready after initialization completes</span>
+    <span class="kw">go func</span>() {
+        warmUpCaches()
+        runMigrations()
+        ready.<span class="fn">Store</span>(<span class="kw">true</span>)
+    }()
+}</code></pre>
+          </div>
+          <div class="warn"><strong>⚠ Critical distinction:</strong> Liveness failure = restart pod. Readiness failure = remove from load balancer but don't restart. Never include transient dependencies (like external APIs) in liveness checks — temporary outage would cause unnecessary pod restarts.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">08</span>
+          <span class="card-q">How do you write effective runbooks and postmortems for Go service incidents?</span>
+          <span class="tags"><span class="tag tag-easy">Easy</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p><strong>Effective Runbook structure:</strong></p>
+          <ul>
+            <li>Alert description + severity + who is paged</li>
+            <li>Impact: what is user-visible, which SLO is affected</li>
+            <li>Investigation steps: specific PromQL queries, log queries, pprof commands</li>
+            <li>Mitigation: step-by-step rollback, feature flag disable, traffic redirect</li>
+            <li>Escalation path: who to call if unresolved in 30 min</li>
+          </ul>
+          <p><strong>Blameless Postmortem structure:</strong></p>
+          <ul>
+            <li>Timeline: what happened, when (UTC timestamps)</li>
+            <li>Root cause analysis (5 Whys)</li>
+            <li>Contributing factors (not just immediate cause)</li>
+            <li>What went well, what went poorly</li>
+            <li>Action items: specific, time-bound, owner assigned (not "improve monitoring")</li>
+          </ul>
+          <div class="success"><strong>✅ Key principle:</strong> Blameless postmortems. The goal is systemic improvement, not assigning fault. Systems should be designed so that individual mistakes can't cause catastrophic failures.</div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ── SECTION 7: PERFORMANCE ── -->
+    <section class="section" id="perf">
+      <div class="section-header">
+        <div class="section-icon">⚡</div>
+        <div class="section-title-wrap">
+          <h2>Performance Optimization</h2>
+          <p>Profiling, benchmarking, and optimization techniques for Go</p>
+        </div>
+      </div>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">01</span>
+          <span class="card-q">How do you write and interpret Go benchmarks? What are the common mistakes?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="kw">func</span> <span class="fn">BenchmarkMyFunc</span>(b *testing.<span class="typ">B</span>) {
+    <span class="cmt">// Setup OUTSIDE the loop</span>
+    data := <span class="fn">generateData</span>(<span class="num">1000</span>)
+    
+    b.<span class="fn">ResetTimer</span>() <span class="cmt">// exclude setup from measurement</span>
+    
+    <span class="kw">for</span> i := <span class="num">0</span>; i &lt; b.N; i++ {
+        result := <span class="fn">process</span>(data)
+        _ = result <span class="cmt">// prevent compiler from optimizing away</span>
+    }
+}
+
+<span class="cmt">// Sub-benchmarks for different inputs</span>
+<span class="kw">func</span> <span class="fn">BenchmarkJSON</span>(b *testing.<span class="typ">B</span>) {
+    sizes := []<span class="typ">int</span>{<span class="num">100</span>, <span class="num">1000</span>, <span class="num">10000</span>}
+    <span class="kw">for</span> _, n := <span class="kw">range</span> sizes {
+        b.<span class="fn">Run</span>(fmt.<span class="fn">Sprintf</span>(<span class="str">"size-%d"</span>, n), <span class="kw">func</span>(b *testing.<span class="typ">B</span>) {
+            data := <span class="fn">makePayload</span>(n)
+            b.<span class="fn">SetBytes</span>(<span class="typ">int64</span>(<span class="fn">len</span>(data))) <span class="cmt">// reports MB/s</span>
+            b.<span class="fn">ReportAllocs</span>()              <span class="cmt">// show alloc/op</span>
+            <span class="kw">for</span> i := <span class="num">0</span>; i &lt; b.N; i++ {
+                json.<span class="fn">Marshal</span>(data)
+            }
+        })
+    }
+}</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt"># Run benchmarks</span>
+go test -bench=. -benchmem -benchtime=5s ./...
+
+<span class="cmt"># Compare with benchstat</span>
+go test -bench=. -count=5 > old.txt
+<span class="cmt"># after change:</span>
+go test -bench=. -count=5 > new.txt
+benchstat old.txt new.txt</code></pre>
+          </div>
+          <div class="warn"><strong>⚠ Common mistakes:</strong> Not using <code>b.N</code> correctly, measuring setup time, letting compiler optimize away results (use <code>sink</code> variable), running benchmarks on noisy machines.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">02</span>
+          <span class="card-q">Explain cache-friendly data structures and false sharing in Go.</span>
+          <span class="tags"><span class="card tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Modern CPUs load memory in <strong>cache lines</strong> (typically 64 bytes). When two goroutines modify fields that share a cache line, they invalidate each other's cache — this is <strong>false sharing</strong>.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// ❌ False sharing: two counters on same cache line</span>
+<span class="kw">type</span> <span class="typ">BadCounters</span> <span class="kw">struct</span> {
+    a atomic.<span class="typ">Int64</span> <span class="cmt">// same 64-byte cache line as b</span>
+    b atomic.<span class="typ">Int64</span>
+}
+
+<span class="cmt">// ✅ Pad to separate cache lines</span>
+<span class="kw">type</span> <span class="typ">PaddedCounter</span> <span class="kw">struct</span> {
+    value atomic.<span class="typ">Int64</span>
+    _     [<span class="num">56</span>]<span class="typ">byte</span> <span class="cmt">// 64 - 8 = 56 padding bytes</span>
+}
+<span class="kw">type</span> <span class="typ">GoodCounters</span> <span class="kw">struct</span> {
+    a <span class="typ">PaddedCounter</span> <span class="cmt">// owns its own cache line</span>
+    b <span class="typ">PaddedCounter</span>
+}
+
+<span class="cmt">// ❌ Pointer-heavy linked list — bad cache locality</span>
+<span class="cmt">// Each node traversal = potential cache miss</span>
+
+<span class="cmt">// ✅ Slice-based (array) structures — sequential memory access</span>
+<span class="cmt">// Prefetcher can predict and preload next elements</span>
+<span class="kw">type</span> <span class="typ">Queue</span>[T <span class="kw">any</span>] <span class="kw">struct</span> {
+    items []T    <span class="cmt">// contiguous memory, cache friendly</span>
+    head, tail <span class="typ">int</span>
+}</code></pre>
+          </div>
+          <div class="tip"><strong>💡 Practical impact:</strong> False sharing can cause 10-100x performance degradation in heavily contended concurrent code. Measure with <code>perf stat -e cache-misses</code> on Linux or use pprof CPU profiles.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">03</span>
+          <span class="card-q">What is inlining and when does Go's compiler inline functions? How do you control it?</span>
+          <span class="tags"><span class="card tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>Inlining substitutes a function call with the function body, eliminating call overhead and enabling further optimizations (escape analysis, constant folding).</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt"># See what gets inlined</span>
+go build -gcflags="-m" ./...
+<span class="cmt"># output: "can inline", "inlining call to", "too complex to inline"</span></code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// Go inlines if function complexity ("AST nodes") < budget (~80)</span>
+
+<span class="cmt">// ✅ Will inline (simple)</span>
+<span class="kw">func</span> <span class="fn">Add</span>(a, b <span class="typ">int</span>) <span class="typ">int</span> { <span class="kw">return</span> a + b }
+
+<span class="cmt">// ❌ Won't inline (contains loop/closure/recover)</span>
+<span class="kw">func</span> <span class="fn">ComplexFunc</span>(s []<span class="typ">int</span>) <span class="typ">int</span> {
+    total := <span class="num">0</span>
+    <span class="kw">for</span> _, v := <span class="kw">range</span> s { total += v }  <span class="cmt">// loop prevents inlining</span>
+    <span class="kw">return</span> total
+}
+
+<span class="cmt">// Force no-inline (for debugging/profiling)</span>
+<span class="cmt">//go:noinline</span>
+<span class="kw">func</span> <span class="fn">DoSomething</span>() { ... }
+
+<span class="cmt">// Compiler directives (Go 1.21+)</span>
+<span class="cmt">//go:nosplit    — no stack growth</span>
+<span class="cmt">//go:norace     — exclude from race detector</span></code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">04</span>
+          <span class="card-q">How do you reduce allocations in hot paths? Practical techniques with examples.</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// 1. Pre-allocate slices with known capacity</span>
+results := <span class="fn">make</span>([]<span class="typ">Result</span>, <span class="num">0</span>, expectedSize) <span class="cmt">// no growth = no alloc</span>
+
+<span class="cmt">// 2. strings.Builder instead of concatenation</span>
+<span class="kw">var</span> sb strings.<span class="typ">Builder</span>
+sb.<span class="fn">Grow</span>(<span class="num">256</span>) <span class="cmt">// pre-allocate estimate</span>
+sb.<span class="fn">WriteString</span>(<span class="str">"hello"</span>)
+sb.<span class="fn">WriteString</span>(name)
+result := sb.<span class="fn">String</span>()
+
+<span class="cmt">// 3. Avoid interface boxing in hot paths</span>
+<span class="kw">func</span> <span class="fn">ProcessFast</span>(v <span class="typ">int</span>) { ... }     <span class="cmt">// no alloc</span>
+<span class="kw">func</span> <span class="fn">ProcessSlow</span>(v <span class="kw">interface</span>{}) { ... } <span class="cmt">// allocs to box v</span>
+
+<span class="cmt">// 4. Return struct, not pointer (stays on stack)</span>
+<span class="kw">func</span> <span class="fn">parse</span>(s <span class="typ">string</span>) <span class="typ">Result</span> { ... }  <span class="cmt">// stack allocated</span>
+
+<span class="cmt">// 5. Reuse buffers via sync.Pool</span>
+<span class="kw">var</span> pool = sync.<span class="typ">Pool</span>{New: <span class="kw">func</span>() <span class="kw">any</span> { <span class="kw">return</span> &amp;<span class="typ">bytes.Buffer</span>{} }}
+
+<span class="cmt">// 6. Avoid fmt.Sprintf for simple cases</span>
+<span class="cmt">// ❌ allocates</span>
+s := fmt.<span class="fn">Sprintf</span>(<span class="str">"%d"</span>, n)
+<span class="cmt">// ✅ no alloc</span>
+s := strconv.<span class="fn">Itoa</span>(n)
+
+<span class="cmt">// 7. Avoid []byte → string conversion (zero-copy in Go 1.20+)</span>
+b := []<span class="typ">byte</span>{<span class="str">'h'</span>, <span class="str">'i'</span>}
+s := unsafe.<span class="fn">String</span>(&amp;b[<span class="num">0</span>], <span class="fn">len</span>(b)) <span class="cmt">// zero alloc</span></code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">05</span>
+          <span class="card-q">What is SIMD and how can you leverage it in Go? When does the compiler auto-vectorize?</span>
+          <span class="tags"><span class="tag tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>SIMD (Single Instruction, Multiple Data) processes multiple values in a single CPU instruction using wide registers (AVX2: 256-bit, processes 32 bytes at once).</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// Auto-vectorized by Go compiler (simple loops on numeric types)</span>
+<span class="kw">func</span> <span class="fn">Sum</span>(data []<span class="typ">float64</span>) <span class="typ">float64</span> {
+    var sum <span class="typ">float64</span>
+    <span class="kw">for</span> _, v := <span class="kw">range</span> data { sum += v }
+    <span class="kw">return</span> sum
+}
+<span class="cmt">// Compiler generates vectorized SSE/AVX instructions ✅</span>
+
+<span class="cmt">// Manual SIMD via Go assembly (.s file)</span>
+<span class="cmt">// Used in: crypto/sha256, strings package, encoding/json</span>
+
+<span class="cmt">// Use github.com/klauspost/cpuid for CPU feature detection</span>
+<span class="kw">import</span> <span class="str">"github.com/klauspost/cpuid/v2"</span>
+
+<span class="kw">if</span> cpu.<span class="typ">CPU</span>.Has(cpuid.AVX2) {
+    <span class="kw">return</span> <span class="fn">sumAVX2</span>(data)
+}
+<span class="kw">return</span> <span class="fn">sumGeneric</span>(data)</code></pre>
+          </div>
+          <div class="tip"><strong>💡 Practical approach:</strong> For most Go engineers, SIMD is accessed indirectly through optimized libraries (bytes.Count, strings.Index, etc. use assembly). Use <code>go vet -asm</code> to view generated assembly and check for vectorization.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">06</span>
+          <span class="card-q">How do you optimize HTTP handler performance in Go? Connection pooling, keep-alive, timeouts.</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// ✅ Production-ready server config</span>
+srv := &amp;http.<span class="typ">Server</span>{
+    Addr:              <span class="str">":8080"</span>,
+    ReadTimeout:       <span class="num">5</span> * time.<span class="typ">Second</span>,
+    ReadHeaderTimeout: <span class="num">2</span> * time.<span class="typ">Second</span>,
+    WriteTimeout:      <span class="num">10</span> * time.<span class="typ">Second</span>,
+    IdleTimeout:       <span class="num">120</span> * time.<span class="typ">Second</span>,
+    MaxHeaderBytes:    <span class="num">1</span> &lt;&lt; <span class="num">20</span>, <span class="cmt">// 1MB</span>
+    Handler:           mux,
+}
+
+<span class="cmt">// ✅ Optimized HTTP client with connection pool</span>
+client := &amp;http.<span class="typ">Client</span>{
+    Timeout: <span class="num">10</span> * time.<span class="typ">Second</span>,
+    Transport: &amp;http.<span class="typ">Transport</span>{
+        MaxIdleConns:        <span class="num">100</span>,
+        MaxIdleConnsPerHost: <span class="num">20</span>,
+        MaxConnsPerHost:     <span class="num">50</span>,
+        IdleConnTimeout:     <span class="num">90</span> * time.<span class="typ">Second</span>,
+        TLSHandshakeTimeout: <span class="num">3</span> * time.<span class="typ">Second</span>,
+        DisableCompression:  <span class="kw">true</span>, <span class="cmt">// if using CDN</span>
+        ForceAttemptHTTP2:   <span class="kw">true</span>,
+    },
+}
+
+<span class="cmt">// ❌ Never create new http.Client per request!</span>
+<span class="cmt">// Each has its own transport = no connection reuse</span>
+
+<span class="cmt">// Response body must ALWAYS be fully consumed and closed</span>
+resp, err := client.<span class="fn">Do</span>(req)
+<span class="kw">if</span> err != <span class="kw">nil</span> { <span class="kw">return</span> err }
+<span class="kw">defer</span> func() {
+    io.<span class="fn">Copy</span>(io.<span class="typ">Discard</span>, resp.Body) <span class="cmt">// drain for connection reuse</span>
+    resp.Body.<span class="fn">Close</span>()
+}()</code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">07</span>
+          <span class="card-q">Explain Go's compiler optimizations: dead code elimination, constant folding, and escape analysis.</span>
+          <span class="tags"><span class="card tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// Constant folding — computed at compile time</span>
+<span class="kw">const</span> (
+    KB = <span class="num">1024</span>
+    MB = KB * <span class="num">1024</span>  <span class="cmt">// compiler computes: 1048576</span>
+    GB = MB * <span class="num">1024</span>
+)
+buf := <span class="fn">make</span>([]<span class="typ">byte</span>, <span class="num">64</span>*KB) <span class="cmt">// no runtime multiplication</span>
+
+<span class="cmt">// Dead code elimination</span>
+<span class="kw">const</span> debug = <span class="kw">false</span>
+<span class="kw">if</span> debug {
+    fmt.<span class="fn">Println</span>(<span class="str">"debug info"</span>) <span class="cmt">// removed from binary entirely</span>
+}
+
+<span class="cmt">// Escape analysis: var stays on stack if doesn't escape</span>
+<span class="kw">func</span> <span class="fn">noEscape</span>() <span class="typ">int</span> {
+    x := <span class="num">42</span>       <span class="cmt">// stack allocated</span>
+    <span class="kw">return</span> x + <span class="num">1</span>   <span class="cmt">// x never escapes</span>
+}
+
+<span class="cmt">// PGO (Profile-Guided Optimization) — Go 1.20+</span>
+<span class="cmt"># Collect CPU profile in production</span>
+curl http://localhost:6060/debug/pprof/profile?seconds=30 > cpu.pprof
+
+<span class="cmt"># Build with PGO — 2-14% speedup</span>
+go build -pgo=cpu.pprof ./cmd/app</code></pre>
+          </div>
+          <div class="success"><strong>✅ PGO (Profile-Guided Optimization):</strong> Go 1.20+ automatically uses a <code>default.pgo</code> profile if present. Enables more aggressive inlining based on real call frequencies. Easy 2-14% speedup with zero code changes.</div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">08</span>
+          <span class="card-q">How do you optimize database query performance in a Go application?</span>
+          <span class="tags"><span class="tag tag-medium">Medium</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// 1. Configure connection pool correctly</span>
+db, _ := sql.<span class="fn">Open</span>(<span class="str">"postgres"</span>, dsn)
+db.<span class="fn">SetMaxOpenConns</span>(<span class="num">25</span>)          <span class="cmt">// match DB max connections</span>
+db.<span class="fn">SetMaxIdleConns</span>(<span class="num">5</span>)           <span class="cmt">// keep connections warm</span>
+db.<span class="fn">SetConnMaxLifetime</span>(<span class="num">5</span> * time.<span class="typ">Minute</span>)
+
+<span class="cmt">// 2. Use prepared statements in hot paths</span>
+stmt, _ := db.<span class="fn">PrepareContext</span>(ctx, <span class="str">"SELECT * FROM users WHERE id = $1"</span>)
+<span class="kw">defer</span> stmt.<span class="fn">Close</span>()
+row := stmt.<span class="fn">QueryRowContext</span>(ctx, userID)
+
+<span class="cmt">// 3. Batch inserts instead of individual inserts</span>
+<span class="cmt">// ❌ N queries</span>
+<span class="kw">for</span> _, u := <span class="kw">range</span> users { db.<span class="fn">Exec</span>(<span class="str">"INSERT INTO users..."</span>, u.Name) }
+
+<span class="cmt">// ✅ 1 query with COPY or bulk VALUES</span>
+txn, _ := db.<span class="fn">Begin</span>()
+stmt, _ := txn.<span class="fn">Prepare</span>(pq.<span class="fn">CopyIn</span>(<span class="str">"users"</span>, <span class="str">"name"</span>, <span class="str">"email"</span>))
+<span class="kw">for</span> _, u := <span class="kw">range</span> users { stmt.<span class="fn">Exec</span>(u.Name, u.Email) }
+stmt.<span class="fn">Exec</span>() <span class="cmt">// flush</span>
+txn.<span class="fn">Commit</span>()
+
+<span class="cmt">// 4. Use pgx instead of lib/pq for PostgreSQL</span>
+<span class="cmt">// 5. Select only needed columns — avoid SELECT *</span>
+<span class="cmt">// 6. Add EXPLAIN ANALYZE to slow query log</span>
+<span class="cmt">// 7. Use database/sql context for timeout per query</span>
+ctx, cancel := context.<span class="fn">WithTimeout</span>(ctx, <span class="num">3</span>*time.<span class="typ">Second</span>)
+<span class="kw">defer</span> <span class="fn">cancel</span>()</code></pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-header">
+          <span class="card-num">09</span>
+          <span class="card-q">What is the Go memory model and how does it affect concurrent programming?</span>
+          <span class="tags"><span class="card tag-hard">Hard</span></span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="card-body">
+          <div class="divider"></div>
+          <p>The Go Memory Model defines the conditions under which reads and writes to the same variable in different goroutines are guaranteed to be observable. It uses <strong>happens-before</strong> relationships.</p>
+          <div class="code-wrap">
+            <div class="code-lang"><span>go</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code"><span class="cmt">// Synchronized-before guarantees (happens-before chain)</span>
+
+<span class="cmt">// Channel communication — send happens before corresponding receive</span>
+done := <span class="fn">make</span>(<span class="kw">chan</span> <span class="kw">struct</span>{})
+x := <span class="num">0</span>
+<span class="kw">go func</span>() {
+    x = <span class="num">42</span>        <span class="cmt">// write</span>
+    done &lt;- <span class="kw">struct</span>{}{}  <span class="cmt">// send synchronizes</span>
+}()
+&lt;-done
+fmt.<span class="fn">Println</span>(x) <span class="cmt">// guaranteed to see 42</span>
+
+<span class="cmt">// ❌ No synchronization — undefined behavior</span>
+x = <span class="num">0</span>
+<span class="kw">go func</span>() { x = <span class="num">42</span> }()
+fmt.<span class="fn">Println</span>(x) <span class="cmt">// might be 0, might be 42, might corrupt</span>
+
+<span class="cmt">// Sync primitives that establish happens-before:</span>
+<span class="cmt">// - sync.Mutex Lock/Unlock</span>
+<span class="cmt">// - channel send/receive</span>
+<span class="cmt">// - sync.WaitGroup Done/Wait</span>
+<span class="cmt">// - sync.Once Do</span>
+<span class="cmt">// - atomic operations (with appropriate ordering)</span></code></pre>
+          </div>
+          <div class="warn"><strong>⚠ DRF (Data Race Freedom) guarantee:</strong> Go only guarantees correct behavior for data-race-free programs. The presence of a data race makes program behavior undefined — even seemingly unrelated reads could return unexpected values.</div>
+        </div>
+      </details>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ── Search ──
+const searchInput = document.getElementById('search');
+const cards = document.querySelectorAll('.card');
+const noResults = document.getElementById('noResults');
+const searchCount = document.getElementById('searchCount');
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  let visible = 0;
+
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    const match = !q || text.includes(q);
+    card.classList.toggle('hidden', !match);
+    if (match) visible++;
+  });
+
+  noResults.classList.toggle('show', visible === 0 && q !== '');
+  searchCount.textContent = q ? `${visible} result${visible !== 1 ? 's' : ''}` : '';
+
+  // Show/hide sections based on visible cards
+  document.querySelectorAll('.section').forEach(section => {
+    const hasVisible = [...section.querySelectorAll('.card')].some(c => !c.classList.contains('hidden'));
+    section.style.display = hasVisible ? '' : 'none';
+  });
+});
+
+// ── Reading progress ──
+const progress = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const pct = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100;
+  progress.style.width = Math.min(pct, 100) + '%';
+});
+
+// ── Copy code ──
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// ── Active nav link on scroll ──
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link');
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      [...navLinks, ...sidebarLinks].forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// ── Add open class to details ──
+document.querySelectorAll('details').forEach(d => {
+  d.addEventListener('toggle', () => {
+    d.classList.toggle('open', d.open);
+  });
+});
+</script>
+</body>
+</html>
